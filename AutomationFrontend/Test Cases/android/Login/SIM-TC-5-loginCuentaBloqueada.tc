@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Login - Bloqueo de inicio de sesion para cuenta marcada como locked out [SIM-6]. Valida que alice@example.com/10203040 sea rechazada con el mensaje "Sorry this user has been locked out." sin navegar.</description>
+   <name>SIM-TC-5-loginCuentaBloqueada</name>
+   <tag>regresion,login,android,negativo</tag>
+   <comment></comment>
+   <recordOption>OTHER</recordOption>
+   <testCaseGuid>e70c313f-e2c2-4148-8bf0-4a26c899176c</testCaseGuid>
+</TestCaseEntity>

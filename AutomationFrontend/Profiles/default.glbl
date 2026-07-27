@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GlobalVariableEntities>
+   <description></description>
+   <name>default</name>
+   <tag></tag>
+   <defaultProfile>true</defaultProfile>
+   <GlobalVariableEntity>
+      <description>Plataforma de ejecución: 'android' o 'ios'</description>
+      <initValue>'android'</initValue>
+      <name>G_Platform</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Package ID / Bundle ID de la app bajo prueba (configurable — cualquier app)</description>
+      <initValue>'com.saucelabs.mydemoapp.android'</initValue>
+      <name>G_AppBundleID</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Automation name para Appium: 'UiAutomator2' (Android) o 'XCUITest' (iOS)</description>
+      <initValue>'UiAutomator2'</initValue>
+      <name>G_AutomationName</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Usuario de prueba (email o identificador)</description>
+      <initValue>''</initValue>
+      <name>G_User</name>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Nombre del dispositivo (como aparece en adb/instruments)</description>
+      <initValue>'emulator-5554'</initValue>
+      <name>G_DevicesName</name>
+   </GlobalVariableEntity>
+</GlobalVariableEntities>

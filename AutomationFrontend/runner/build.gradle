@@ -1,0 +1,58 @@
+plugins {
+    id 'groovy'
+    id 'application'
+    id 'com.gradleup.shadow' version '8.3.6'
+}
+
+group   = 'com.tuempresa.runner'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Groovy (same major version as Katalon project)
+    implementation 'org.codehaus.groovy:groovy-all:3.0.22'
+
+    // Appium + Selenium (java-client 9.x pulls Selenium 4 transitively)
+    implementation 'io.appium:java-client:9.2.3'
+
+    // Selenium explícito para ejecución Web (navegador) — pineado a la misma versión
+    // que ya resuelve la constraint estricta [4.19.0, 5.0) de appium:java-client 9.2.3,
+    // para evitar dos módulos Selenium distintos en el classpath.
+    implementation 'org.seleniumhq.selenium:selenium-java:4.19.0'
+
+    // YAML config parsing
+    implementation 'org.yaml:snakeyaml:2.2'
+
+    // Logging (SLF4J required by Appium client)
+    implementation 'org.slf4j:slf4j-simple:2.0.16'
+}
+
+application {
+    mainClass = 'runner.KatalonRunner'
+}
+
+// Fat jar — single executable artifact
+shadowJar {
+    archiveBaseName    = 'runner'
+    archiveClassifier  = 'all'
+    archiveVersion     = ''
+    mergeServiceFiles()
+    manifest {
+        attributes 'Main-Class': 'runner.KatalonRunner'
+    }
+}
+
+// Compile with Groovy source directory
+sourceSets {
+    main {
+        groovy {
+            srcDirs = ['src/main/groovy']
+        }
+    }
+}
+
+// Always build fat jar when running 'gradle build'
+build.dependsOn shadowJar

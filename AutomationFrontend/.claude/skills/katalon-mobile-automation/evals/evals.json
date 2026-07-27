@@ -1,0 +1,149 @@
+{
+  "skillName": "katalon-mobile-automation",
+  "version": "1.0.0",
+  "description": "Evaluations for the Katalon Mobile Automation skill — POM methodology, .rs files, Android/iOS test creation for TuEmpresa",
+  "evals": [
+    {
+      "id": "eval-001",
+      "title": "Create full Géant navigation test",
+      "prompt": "Create a new Katalon test called testOpenMarketGeant that opens the TuEmpresa app on Android, navigates to the Súper vertical, scrolls to the Supermercados section, scrolls right, taps Géant, and verifies the store opened. Use POM structure with callTestCase to reuse testOpenApp for app launch.",
+      "expectedOutputs": {
+        "files": [
+          "Scripts/testOpenMarketGeant/Script*.groovy",
+          "Test Cases/testOpenMarketGeant.tc",
+          "Object Repository/testOpenMarketGeant/buttonSuperVertical.rs",
+          "Object Repository/testOpenMarketGeant/storeGeant.rs",
+          "Object Repository/testOpenMarketGeant/headerGeant.rs"
+        ],
+        "codePatterns": [
+          "WebUI.callTestCase(findTestCase('Test Cases/testOpenApp')",
+          "Mobile.tap(findTestObject(",
+          "Mobile.scrollToText('Supermercados'",
+          "Mobile.swipe(",
+          "Mobile.verifyElementVisible("
+        ],
+        "rsFileRequirements": [
+          "<MobileElementEntity>",
+          "<locatorStrategy>ATTRIBUTES</locatorStrategy>",
+          "<platform>ANDROID</platform>",
+          "<selectorMethod>BASIC</selectorMethod>",
+          "<webElementProperties>"
+        ]
+      },
+      "antiPatterns": [
+        "Using <WebElementEntity> in .rs files",
+        "Using Mobile.callTestCase instead of WebUI.callTestCase",
+        "Missing locatorStrategy in .rs files",
+        "Hardcoded Mobile.startApplication in script instead of callTestCase",
+        "Raw Mobile.tap calls in script without keyword abstraction (if POM requested)"
+      ],
+      "gradingCriteria": {
+        "critical": [
+          "All .rs files use MobileElementEntity root tag",
+          "All .rs files contain locatorStrategy=ATTRIBUTES",
+          "Script calls WebUI.callTestCase for app launch",
+          "Script includes waitForElementPresent after navigation"
+        ],
+        "important": [
+          "tap() uses timeout >= 5 (not 0)",
+          "Warning toast handled with try/catch",
+          "headerGeant verification present"
+        ],
+        "bonus": [
+          "Custom Keyword class used instead of raw Mobile.* calls",
+          "GlobalVariable used for app path"
+        ]
+      }
+    },
+    {
+      "id": "eval-002",
+      "title": "Create .rs file for a specific element",
+      "prompt": "Create an .rs file for a Katalon Object Repository element: a TextView with text 'Inicio' and resource-id 'com.tuempresa.app:id/tab_home'. This is an Android element.",
+      "expectedOutputs": {
+        "xmlStructure": {
+          "rootTag": "MobileElementEntity",
+          "requiredFields": [
+            "elementGuidId",
+            "name",
+            "selectorCollection",
+            "selectorMethod=BASIC",
+            "webElementProperties",
+            "locator",
+            "locatorCollection",
+            "locatorStrategy=ATTRIBUTES",
+            "platform=ANDROID"
+          ],
+          "webElementProperties": [
+            "class=android.widget.TextView",
+            "text=Inicio",
+            "resource-id=com.tuempresa.app:id/tab_home"
+          ]
+        }
+      },
+      "antiPatterns": [
+        "Using <WebElementEntity> as root tag",
+        "Using <properties> instead of <webElementProperties>",
+        "Missing <locatorStrategy> tag",
+        "Missing <platform> tag",
+        "Missing <locator> block",
+        "Missing <locatorCollection> block",
+        "Unescaped quotes in XML values (must use &quot;)"
+      ],
+      "gradingCriteria": {
+        "critical": [
+          "Root tag is <MobileElementEntity>",
+          "Contains <locatorStrategy>ATTRIBUTES</locatorStrategy>",
+          "Contains <platform>ANDROID</platform>",
+          "Contains <webElementProperties> (not <properties>)",
+          "Contains BASIC selector with correct attribute string"
+        ],
+        "important": [
+          "elementGuidId is a valid UUID format",
+          "Quotes in selector values are escaped as &quot;"
+        ]
+      }
+    },
+    {
+      "id": "eval-003",
+      "title": "Create POM Keyword class for TuEmpresa home screen",
+      "prompt": "Create a Custom Keyword class for the TuEmpresa home screen (Keywords/tuempresa/HomePage.groovy) with methods: tapSuperVertical(), tapMercadoVertical(), tapMascotaVertical(), and closeWarningToastIfPresent(). Each method should use findTestObject pointing to Object Repository elements.",
+      "expectedOutputs": {
+        "filePath": "Keywords/tuempresa/HomePage.groovy",
+        "codePatterns": [
+          "package tuempresa",
+          "@Keyword",
+          "import com.kms.katalon.core.annotation.Keyword",
+          "import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords as Mobile",
+          "findTestObject('Object Repository/",
+          "Mobile.tap(",
+          "try {",
+          "} catch (Exception e) {"
+        ]
+      },
+      "antiPatterns": [
+        "Missing @Keyword annotation on methods",
+        "Using MobileElementEntity XML in groovy file",
+        "Calling WebUI methods in a Mobile keyword class",
+        "Hardcoded coordinates instead of findTestObject",
+        "Missing try/catch on closeWarningToastIfPresent"
+      ],
+      "gradingCriteria": {
+        "critical": [
+          "File is in Keywords/ directory not Scripts/",
+          "Correct package declaration (tuempresa)",
+          "@Keyword annotation present on each method",
+          "Mobile.tap() using findTestObject references",
+          "closeWarningToastIfPresent wraps Mobile.tap in try/catch"
+        ],
+        "important": [
+          "tap() uses timeout > 0",
+          "Mobile.waitForElementPresent called after navigation taps"
+        ],
+        "bonus": [
+          "Imports are minimal and correct",
+          "Methods are parameterized where appropriate"
+        ]
+      }
+    }
+  ]
+}

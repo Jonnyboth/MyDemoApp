@@ -1,0 +1,81 @@
+manifest_version: 1
+skill: qa-explorer
+role: validator_and_mapper
+pipeline_step: "2-Explorar"
+
+description: >
+  Dos modos: valida/aprueba-rechaza el plan Draft de qa-flow-planner, y captura objetos
+  .rs del Object Repository con UIAutomator dump (Android) o inspección DOM (Web).
+
+modes:
+  - name: VALIDACION
+    trigger: "context_file.PlanStatus == Draft"
+    writes_to: [".github/orchestrator/runs/**"]   # actualiza PlanStatus/RejectionNotes
+  - name: CAPTURA
+    trigger: "context_file.PlanStatus == Approved"
+    writes_to:
+      - "Object Repository/android/**"
+      - "Object Repository/ios/**"
+      - "Object Repository/web/**"
+
+inputs:
+  - context_file: .github/orchestrator/runs/<run-id>-<flujo>.md
+
+outputs:
+  validacion:
+    - plan_status: Approved | Rejected
+    - rejection_notes: string (si Rejected)
+    - dumps_capturados: list (reutilizables por MODO CAPTURA)
+  captura:
+    - rs_files: list[path]
+    - coverage_table: markdown
+
+allowed_write_paths:
+  - "Object Repository/android/**"
+  - "Object Repository/ios/**"
+  - "Object Repository/web/**"
+  - ".github/orchestrator/runs/**"   # solo para actualizar PlanStatus del run activo
+
+forbidden_paths:
+  - "Keywords/com/tuempresa/**"      # mapeo solo, no escritura — responsabilidad de qa-test-creator
+  - "Scripts/**"
+  - "Test Cases/**"
+  - "settings/**"
+  - "Include/config/**"
+  - "Profiles/**"
+  - "Drivers/**"
+  - "Libs/internal/**"
+  - "*.prj"
+  - "build.gradle"
+  - "package.json"
+
+out_of_scope_protocol:
+  format: |
+    ❌ Solicitud OUT OF SCOPE
+    Intención: <qué se quiere hacer>
+    Ruta: <ruta fuera de scope>
+    Permiso requerido: ¿Autorizas que qa-explorer modifique <archivo>?
+    Justificación: <por qué es necesario>
+  on_deny: "Sugerir coordinar con qa-test-creator o revisar el plan con qa-flow-planner"
+
+hard_rules_ref: references/rs-hard-rules.md   # R-K1, R-K2, R-K3 — no negociables
+
+state_machine:
+  field: PlanStatus
+  owner_of_transition: qa-explorer   # única skill autorizada a escribir Approved/Rejected
+
+retry_policy:
+  counter_field: RetryCount
+  max_attempts: 3
+  on_exceeded: escalate_to_user
+  increments_on: Rejected
+
+related_skills:
+  - qa-flow-planner   # origen del plan Draft; destino del Rejected
+  - qa-test-creator    # siguiente paso tras Approved + captura completa
+
+reference_docs:
+  - references/validation-protocol.md
+  - references/rs-hard-rules.md
+  - path: .claude/skills/katalon-mobile-automation/SKILL.md
+    note: "protocolo de captura detallado y formato .rs — no duplicado aquí"

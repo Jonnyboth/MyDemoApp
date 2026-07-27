@@ -1,0 +1,25 @@
+{
+    "chat.mcp.serverSampling": {
+        "FuncionalQaPm/.mcp.json: appium-mcp": {
+            "allowedModels": [
+                "copilotcli/auto",
+                "copilot/auto"
+            ]
+        },
+        "FuncionalQaPm/.mcp.json: playwright-mcp": {
+            "allowedModels": [
+                "copilotcli/auto",
+                "copilot/auto"
+            ]
+        },
+        "FuncionalQaPm/.mcp.json: aisquare-playwright": {
+            "allowedModels": [
+                "copilotcli/auto",
+                "copilot/auto"
+            ]
+        }
+    },
+    "python.analysis.typeCheckingMode": "standard",
+    "claudeCode.useTerminal": true,
+    "claudeCode.useCtrlEnterToSend": true
+}

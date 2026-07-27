@@ -1,0 +1,70 @@
+manifest_version: 1
+skill: qa-debugger
+role: fixer
+pipeline_step: "5-Validar (rama de fallo)"
+
+description: >
+  Diagnostica causa raíz de fallos con evidencia real y aplica fix mínimo, respetando
+  la arquitectura POM 3 capas. Invocado por qa-orchestrator cuando el runner falla.
+
+inputs:
+  - test_case_name: string
+  - runner_log: string (stdout/stderr del runner con la línea [FAILED])
+  - screenshot_path: string (opcional, generado por el runner en fallo)
+
+outputs:
+  - root_cause: string
+  - files_modified: list[path]
+  - rule_applied: string (R-K1..R-K6.1, si aplica)
+
+allowed_write_paths:
+  - "Object Repository/android/**"
+  - "Object Repository/ios/**"
+  - "Object Repository/web/**"
+  - "Keywords/com/tuempresa/page/**"
+  - "Keywords/com/tuempresa/steps/**"
+  - "Scripts/android/**"
+  - "Scripts/ios/**"
+  - "Scripts/web/**"
+  - "Test Cases/android/**"
+  - "Test Cases/ios/**"
+  - "Test Cases/web/**"
+
+forbidden_paths:
+  - "settings/**"
+  - "Include/config/**"
+  - "Profiles/**"
+  - "Drivers/**"
+  - "Libs/internal/**"
+  - "*.prj"
+  - "build.gradle"
+  - "package.json"
+
+guardrails:
+  - "Fix mínimo — solo la causa raíz identificada con evidencia"
+  - "Nunca romper la separación Page/Steps/Script"
+  - "Validar locators en dispositivo/navegador real antes de editar, no adivinar"
+  - "Coordenadas siempre escaladas con DeviceResolutionPage (Android)"
+
+hard_rules_refs:
+  - .claude/skills/qa-explorer/references/rs-hard-rules.md          # R-K1/R-K2/R-K3
+  - .claude/skills/qa-test-creator/references/groovy-compat-rules.md # R-K4/R-K5/R-K6/R-K6.1
+
+error_catalog_ref: references/error-catalog.md
+
+pipeline_integration:
+  invoked_by: qa-orchestrator
+  invoked_when: "runner_result == FAILED"
+  next_action: "qa-orchestrator repite paso '4-Correr Tests' tras el fix"
+  retry_policy:
+    counter_field: RunnerRetryCount
+    max_attempts: 3
+    on_exceeded: escalate_to_user
+
+related_skills:
+  - qa-test-creator   # comparte reglas duras R-K1..R-K6.1
+
+reference_docs:
+  - references/error-catalog.md
+  - path: .claude/skills/katalon-mobile-automation/SKILL.md
+    note: "fuente de verdad superior en caso de conflicto"

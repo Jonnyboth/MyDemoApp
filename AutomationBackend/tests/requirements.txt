@@ -1,0 +1,9 @@
+requests==2.32.3
+pytest==8.3.3
+pytest-xdist==3.6.1
+python-dotenv==1.0.1
+pydantic[email]==2.9.2
+jsonschema==4.23.0
+Faker==30.3.0
+tenacity==9.0.0
+pyfiglet==1.0.2

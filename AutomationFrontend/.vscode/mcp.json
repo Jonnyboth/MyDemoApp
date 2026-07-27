@@ -1,0 +1,24 @@
+{
+  "inputs": [],
+  "servers": {
+    "aisquare-playwright": {
+      "command": "npx",
+      "args": [
+        "aisquare-playwright-mcp@latest"
+      ],
+      "type": "stdio"
+    },
+    "mobile-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mobilenext/mobile-mcp@latest"
+      ],
+      "type": "stdio",
+      "env": {
+        "ANDROID_HOME": "/Users/jhonsebastianrianoramirez/.katalon/tools/android_sdk",
+        "PATH": "/Users/jhonsebastianrianoramirez/.katalon/tools/android_sdk/platform-tools:/usr/local/bin:/usr/bin:/bin"
+      }
+    }
+  }
+}

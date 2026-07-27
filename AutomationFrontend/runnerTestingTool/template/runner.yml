@@ -1,0 +1,61 @@
+# =============================================================================
+# Katalon Headless Runner — Plantilla de configuración
+# Copiar a runner/config/runner.yml y reemplazar los valores con << >>
+# =============================================================================
+
+appium:
+  url: http://localhost:4723          # URL del servidor Appium (default: localhost:4723)
+  newCommandTimeout: 300              # Segundos sin comando antes de timeout de sesión
+
+device:
+  udid: <<SERIAL_DEL_DISPOSITIVO>>   # Obtener con: adb devices
+  platformName: Android
+  platformVersion: "<<14>>"          # Versión Android (string con comillas)
+  automationName: UiAutomator2
+  appPackage: <<com.tu.empresa.app>> # Package de la app a testear
+  appActivity: <<com.tu.empresa.app.MainActivity>>  # Activity principal
+  noReset: true                      # true = conserva estado de la app entre runs
+  fullReset: false                   # true = desinstala y reinstala app (lento)
+  autoGrantPermissions: true         # Concede permisos automáticamente
+
+web:
+  browser: chrome                    # chrome | firefox | edge
+  headless: true                     # false para ver el navegador (debugging local)
+  windowSize: "1920,1080"
+  pageLoadTimeout: 30                # Segundos
+  binaryPath: ""                     # Opcional: ruta a un binario de navegador propio.
+                                      # Vacío = Selenium Manager resuelve y descarga solo.
+
+runner:
+  reportDir: runner/reports          # Relativo a la raíz del proyecto Katalon
+  screenshotOnFailure: true          # Captura pantalla en cada fallo
+  retryOnFailure: 0                  # Reintentos por test (0 = sin reintentos)
+  defaultTimeout: 15                 # Segundos por defecto para waits de elementos
+
+# =============================================================================
+# Multiplataforma: la sección 'device' (Android/Appium) y 'web' (Selenium) son
+# independientes. Un proyecto solo-Web puede ignorar 'device' por completo; uno
+# solo-Android puede ignorar 'web'. La plataforma de cada test case se deriva
+# automáticamente del primer segmento de su ruta (Test Cases/android/... vs.
+# Test Cases/web/...), así que ambos pueden convivir en el mismo proyecto.
+# =============================================================================
+
+# =============================================================================
+# Cómo obtener los valores:
+#
+# udid:
+#   adb devices
+#   → Lista los dispositivos conectados. Copiar la primera columna (serial).
+#
+# platformVersion:
+#   adb shell getprop ro.build.version.release
+#   → Retorna la versión Android (ej: "14", "13", "12")
+#
+# appPackage + appActivity:
+#   adb shell dumpsys window windows | grep mCurrentFocus
+#   → Abre la app manualmente y ejecuta este comando
+#   → Formato: mCurrentFocus=Window{... com.paquete/com.paquete.Activity}
+#
+# Alternativa con aapt (si tienes el APK):
+#   aapt dump badging /ruta/app.apk | grep -E "package:|launchable-activity"
+# =============================================================================

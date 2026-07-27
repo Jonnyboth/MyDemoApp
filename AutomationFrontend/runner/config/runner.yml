@@ -1,0 +1,53 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Katalon Headless Runner — Configuration
+# ─────────────────────────────────────────────────────────────────────────────
+
+appium:
+  url: http://localhost:4723          # Appium server URL
+  newCommandTimeout: 300              # seconds before session timeout
+
+device:
+  udid: emulator-5554                # adb device serial (adb devices) — AVD "qa_android" (Pixel 6, API 34, google_apis x86_64)
+  platformName: Android
+  platformVersion: "14"
+  automationName: UiAutomator2
+  appPackage: com.saucelabs.mydemoapp.android          # app de referencia — cambia libremente para probar cualquier otra app
+  appActivity: com.saucelabs.mydemoapp.android.view.activities.SplashActivity
+  appWaitActivity: com.saucelabs.mydemoapp.android.view.activities.SplashActivity
+  noReset: true                       # keep app state between runs
+  fullReset: false
+  autoGrantPermissions: true
+
+web:
+  browser: chrome                     # chrome | firefox | edge
+  headless: true
+  windowSize: "1920,1080"
+  pageLoadTimeout: 30                 # seconds
+  binaryPath: "/home/jhon_riano/.cache/ms-playwright/chromium-1232/chrome-linux64/chrome"
+                                       # Este entorno sandbox no tiene google-chrome/chromium
+                                       # instalado a nivel de sistema. Se apunta al binario
+                                       # "Chrome for Testing" que trae cacheado Playwright
+                                       # (usado solo como binario de navegador — el driver lo
+                                       # sigue resolviendo Selenium Manager). Si se mueve el
+                                       # proyecto a una máquina con Chrome/Chromium instalado,
+                                       # dejar esta línea en "" para que Selenium Manager
+                                       # resuelva el navegador del sistema automáticamente.
+  userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+                                       # Solo aplica en modo headless. Chrome en `--headless=new`
+                                       # reporta por defecto un User-Agent con el literal
+                                       # "HeadlessChrome/<version>" en vez de "Chrome/<version>".
+                                       # Se confirmó empíricamente (ver diagnóstico del run
+                                       # QA-20260710-mercadolibre-camara-carrito) que MercadoLibre
+                                       # bloquea ese User-Agent a nivel de servidor (devuelve una
+                                       # página de error genérica en vez del sitio real) de forma
+                                       # 100% reproducible. Fijar un User-Agent de escritorio normal
+                                       # resuelve el bloqueo sin cambiar el binario ni los flags de
+                                       # sandboxing. Dejar en "" para usar el User-Agent real del
+                                       # navegador (headless o no) si el sitio bajo prueba no exige
+                                       # esto.
+
+runner:
+  reportDir: runner/reports           # relative to project root
+  screenshotOnFailure: true
+  retryOnFailure: 0                   # retries per test (0 = no retry)
+  defaultTimeout: 15                  # seconds for element waits

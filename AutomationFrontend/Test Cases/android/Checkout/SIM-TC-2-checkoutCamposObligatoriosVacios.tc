@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Checkout - Validacion de campos obligatorios vacios al presionar "To Payment" [SIM-5]. Valida que, con el formulario recien cargado (placeholders), "To Payment" muestra los 5 mensajes de error exactos y permanece en Checkout.</description>
+   <name>SIM-TC-2-checkoutCamposObligatoriosVacios</name>
+   <tag>regresion,checkout,android,negativo</tag>
+   <comment></comment>
+   <recordOption>OTHER</recordOption>
+   <testCaseGuid>db29b624-2a7e-4a73-a656-929086ab880c</testCaseGuid>
+</TestCaseEntity>

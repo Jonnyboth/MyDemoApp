@@ -1,0 +1,40 @@
+node_modules
+bin
+build
+Reports
+output
+*.log
+*.groovy
+*.rs
+
+# Estructura propia de Katalon Studio (Groovy/XML), fuera del alcance de Prettier/ESLint
+Keywords
+Scripts
+Test Cases
+Test Suites
+Test Listeners
+Object Repository
+Include
+Drivers
+Plugins
+Profiles
+Checkpoints
+Libs
+Data Files
+settings
+runner
+runnerTestingTool
+
+# Config de herramientas/skills de Claude Code y otros IDEs, fuera del alcance de este proyecto
+.claude
+.github
+.vscode
+.gradle
+.cache
+mitm
+package-lock.json
+
+# Scripts legacy del plugin de IA para Appium (fuera del alcance de este proyecto E2E)
+test_classifier.js
+test_classifier_detect.js
+tfjs-node-wrapper.js

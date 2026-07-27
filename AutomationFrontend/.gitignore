@@ -1,0 +1,29 @@
+# Visual testing actual screenshots (generated, not committed)
+Include/resources/baseline-screenshots/actual_*.png
+
+.gradle
+
+bin
+
+Reports
+
+# Salida generada por el runner headless propio (screenshots + JUnit XML de cada corrida)
+runner/reports
+
+Libs
+
+output
+
+!output/.gitkeep
+build
+
+.classpath
+
+.project
+
+.cache
+node_modules
+
+# .env global del proyecto (symlink a ~/.config/autosquad-ai/global.env) —
+# nunca debe versionarse.
+.env

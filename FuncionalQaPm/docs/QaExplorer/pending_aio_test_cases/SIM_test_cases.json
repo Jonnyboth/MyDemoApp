@@ -1,0 +1,163 @@
+[
+  {
+    "title": "Checkout - Envío exitoso del formulario de dirección con todos los campos obligatorios completos [SIM-5]",
+    "description": "Valida que el cliente pueda avanzar a la pantalla de pago tras completar correctamente el formulario de dirección de envío del Checkout.",
+    "precondition": "El cliente ya inició sesión (ej. bod@example.com) y tiene al menos 1 producto en el carrito.",
+    "priority": "High",
+    "type": "E2E",
+    "estimatedEffort": 240,
+    "labels": ["created_by_ai", "SIM-5", "checkout", "smoke"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Smoke" },
+    "steps": [
+      {"step": "Desde el carrito, presionar 'Proceed To Checkout'", "test_data": "N/A", "expected_result": "Se muestra el formulario 'Checkout' con los campos Full Name, Address Line 1, Address Line 2, City, State/Region, Zip Code y Country"},
+      {"step": "Ingresar un valor en el campo 'Full Name'", "test_data": "QA Tester", "expected_result": "El campo muestra el texto ingresado en color negro (ya no el placeholder gris)"},
+      {"step": "Ingresar un valor en el campo 'Address Line 1'", "test_data": "Calle Falsa 123", "expected_result": "El campo muestra el texto ingresado en color negro"},
+      {"step": "Ingresar un valor en el campo 'City'", "test_data": "Bogota", "expected_result": "El campo muestra el texto ingresado en color negro"},
+      {"step": "Ingresar un valor en el campo 'Zip Code'", "test_data": "110111", "expected_result": "El campo muestra el texto ingresado en color negro"},
+      {"step": "Ingresar un valor en el campo 'Country'", "test_data": "Colombia", "expected_result": "El campo muestra el texto ingresado en color negro"},
+      {"step": "Presionar el botón 'To Payment'", "test_data": "N/A", "expected_result": "El sistema avanza a la pantalla de pago sin mostrar ningún mensaje de error de validación"}
+    ]
+  },
+  {
+    "title": "Checkout - Validación de campos obligatorios vacíos al presionar 'To Payment' [SIM-5]",
+    "description": "Valida que el sistema bloquee el avance a pago y muestre errores específicos cuando el formulario de dirección se envía sin completar.",
+    "precondition": "El cliente ya inició sesión y está en la pantalla de Checkout con el formulario recién cargado (valores de ejemplo/placeholder visibles en gris, sin datos reales ingresados).",
+    "priority": "High",
+    "type": "Component",
+    "estimatedEffort": 120,
+    "labels": ["created_by_ai", "SIM-5", "checkout", "regresion", "negativo"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Regresion" },
+    "steps": [
+      {"step": "Observar los campos del formulario recién cargado, sin tocarlos", "test_data": "N/A", "expected_result": "Los campos (Full Name, Address Line 1, Address Line 2, City, State/Region, Zip Code, Country) muestran texto en gris tipo placeholder, no datos reales ingresados por el usuario"},
+      {"step": "Presionar el botón 'To Payment' sin ingresar ningún dato", "test_data": "N/A", "expected_result": "El sistema muestra 'Please provide your full name.' bajo Full Name, 'Please provide your address.' bajo Address Line 1, 'Please provide your city.' bajo City, 'Please provide your zip' bajo Zip Code y 'Please provide your' bajo Country, y permanece en la pantalla de Checkout sin avanzar a pago"}
+    ]
+  },
+  {
+    "title": "Checkout - El campo Zip Code debe recibir foco y ser editable mediante toque directo [SIM-5]",
+    "description": "Caso de regresión del bug SIM-10: valida que el campo obligatorio Zip Code pueda editarse tocándolo directamente, sin que el campo City intercepte la interacción.",
+    "precondition": "El cliente está en la pantalla de Checkout, con Full Name, Address Line 1 y City ya completados con datos reales.",
+    "priority": "High",
+    "type": "Component",
+    "estimatedEffort": 90,
+    "labels": ["created_by_ai", "SIM-5", "checkout", "regresion", "SIM-10"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Regresion" },
+    "steps": [
+      {"step": "Tocar el campo 'Zip Code'", "test_data": "N/A", "expected_result": "El campo 'Zip Code' recibe el foco del teclado (cursor visible dentro de 'Zip Code'), sin abrir ni modificar el campo 'City' u otro campo"},
+      {"step": "Ingresar un valor numérico en el campo enfocado", "test_data": "110111", "expected_result": "El valor ingresado aparece dentro del campo 'Zip Code', y el campo 'City' conserva su valor original sin alteraciones"}
+    ]
+  },
+  {
+    "title": "Login - Inicio de sesión exitoso con credenciales válidas [SIM-6]",
+    "description": "Valida que un usuario con cuenta activa pueda iniciar sesión correctamente y acceder al catálogo.",
+    "precondition": "Existe la cuenta de prueba 'bod@example.com' activa (no bloqueada) con contraseña '10203040'.",
+    "priority": "High",
+    "type": "E2E",
+    "estimatedEffort": 120,
+    "labels": ["created_by_ai", "SIM-6", "login", "smoke"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Smoke" },
+    "steps": [
+      {"step": "Abrir el menú lateral y tocar 'Log In'", "test_data": "N/A", "expected_result": "Se muestra la pantalla 'Login' con los campos Username y Password vacíos, y la lista de usuarios de prueba (Usernames/Password)"},
+      {"step": "Ingresar usuario y contraseña válidos y presionar 'Login'", "test_data": "usuario: bod@example.com / password: 10203040", "expected_result": "El sistema inicia sesión y navega al catálogo de productos; el menú lateral muestra ahora la opción 'Log Out'"}
+    ]
+  },
+  {
+    "title": "Login - Bloqueo de inicio de sesión para cuenta marcada como locked out [SIM-6]",
+    "description": "Valida que el sistema rechace el acceso y muestre el mensaje correspondiente cuando la cuenta está bloqueada.",
+    "precondition": "Existe la cuenta de prueba 'alice@example.com' marcada como locked out, con contraseña '10203040'.",
+    "priority": "Medium",
+    "type": "Component",
+    "estimatedEffort": 90,
+    "labels": ["created_by_ai", "SIM-6", "login", "regresion", "negativo"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Regresion" },
+    "steps": [
+      {"step": "Abrir la pantalla 'Login'", "test_data": "N/A", "expected_result": "Se muestra el formulario de Login con los campos Username y Password vacíos"},
+      {"step": "Ingresar usuario y contraseña de la cuenta bloqueada y presionar 'Login'", "test_data": "usuario: alice@example.com / password: 10203040", "expected_result": "El sistema muestra el mensaje 'Sorry this user has been locked out.' y no inicia sesión (permanece en la pantalla de Login)"}
+    ]
+  },
+  {
+    "title": "Login - Validación de campo Username obligatorio vacío [SIM-6]",
+    "description": "Valida que el sistema exija el campo Username antes de intentar autenticar.",
+    "precondition": "El usuario está en la pantalla de Login, con los campos Username y Password vacíos.",
+    "priority": "Medium",
+    "type": "Component",
+    "estimatedEffort": 60,
+    "labels": ["created_by_ai", "SIM-6", "login", "regresion", "borde"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Regresion" },
+    "steps": [
+      {"step": "Verificar que los campos Username y Password están vacíos", "test_data": "N/A", "expected_result": "Ambos campos se muestran vacíos, sin texto ingresado"},
+      {"step": "Presionar 'Login' sin ingresar usuario ni contraseña", "test_data": "N/A", "expected_result": "El sistema muestra el mensaje 'Username is required' bajo el campo de usuario y no intenta autenticar"}
+    ]
+  },
+  {
+    "title": "Catálogo - Ordenar productos por precio descendente de forma estrictamente decreciente [SIM-7]",
+    "description": "Caso de regresión del bug SIM-11: valida que el criterio 'Price - Descending' ordene todos los productos del catálogo sin excepciones.",
+    "precondition": "El cliente está en el catálogo de productos con el criterio de orden por defecto (Name - Ascending).",
+    "priority": "High",
+    "type": "Component",
+    "estimatedEffort": 180,
+    "labels": ["created_by_ai", "SIM-7", "catalogo", "regresion", "SIM-11"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Regresion" },
+    "steps": [
+      {"step": "Tocar el ícono de ordenar ('Sort')", "test_data": "N/A", "expected_result": "Se despliega el menú con las opciones 'Name - Ascending', 'Name - Descending', 'Price - Ascending', 'Price - Descending'"},
+      {"step": "Seleccionar 'Price - Descending'", "test_data": "N/A", "expected_result": "El menú se cierra y el catálogo se reordena"},
+      {"step": "Reingresar a 'Catalog' desde el menú lateral y recorrer la lista completa de arriba hacia abajo anotando el precio de cada producto", "test_data": "N/A", "expected_result": "La secuencia completa de precios queda ordenada de mayor a menor, sin ninguna excepción en toda la lista"}
+    ]
+  },
+  {
+    "title": "Catálogo - Navegar al detalle de un producto tras reordenar y desplazar el listado [SIM-7]",
+    "description": "Caso de regresión del bug crítico SIM-9 (crash ArrayIndexOutOfBoundsException): valida que tocar un producto tras reordenar y hacer scroll no cierre la app.",
+    "precondition": "El cliente está en el catálogo de productos.",
+    "priority": "High",
+    "type": "Component",
+    "estimatedEffort": 150,
+    "labels": ["created_by_ai", "SIM-7", "catalogo", "regresion", "SIM-9", "critico"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Regresion" },
+    "steps": [
+      {"step": "Tocar el ícono de ordenar y seleccionar 'Price - Descending'", "test_data": "N/A", "expected_result": "El catálogo se reordena por precio"},
+      {"step": "Desplazar (scroll) el listado hacia abajo", "test_data": "N/A", "expected_result": "Se revelan más productos del catálogo reordenado"},
+      {"step": "Tocar la imagen o el título de cualquier producto visible", "test_data": "N/A", "expected_result": "La app navega correctamente a la pantalla de detalle del producto tocado, sin cerrarse ni regresar a la pantalla Home del dispositivo"}
+    ]
+  },
+  {
+    "title": "Detalle de producto - La imagen de previsualización refleja el color seleccionado [SIM-8]",
+    "description": "Caso de regresión del bug SIM-12: valida que la imagen grande del producto se actualice al seleccionar un color distinto al que se muestra por defecto.",
+    "precondition": "El cliente está en el detalle del producto 'Sauce Labs Backpack', con el color por defecto (negro) mostrado en la imagen.",
+    "priority": "Medium",
+    "type": "Component",
+    "estimatedEffort": 90,
+    "labels": ["created_by_ai", "SIM-8", "carrito", "regresion", "SIM-12"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Regresion" },
+    "steps": [
+      {"step": "Tocar el swatch de color 'Blue' en el selector de color", "test_data": "N/A", "expected_result": "El indicador de selección se mueve al swatch 'Blue'"},
+      {"step": "Observar la imagen grande del producto", "test_data": "N/A", "expected_result": "La imagen se actualiza mostrando el backpack en color azul"}
+    ]
+  },
+  {
+    "title": "Carrito - El color seleccionado en el detalle se refleja correctamente al agregar el producto [SIM-8]",
+    "description": "Valida que el color elegido en el detalle de producto se registre correctamente como dato del ítem en el carrito.",
+    "precondition": "El cliente está en el detalle del producto 'Sauce Labs Backpack' con el color 'Blue' seleccionado.",
+    "priority": "Medium",
+    "type": "E2E",
+    "estimatedEffort": 120,
+    "labels": ["created_by_ai", "SIM-8", "carrito", "smoke"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Smoke" },
+    "steps": [
+      {"step": "Presionar el botón 'Add to cart'", "test_data": "N/A", "expected_result": "El ícono del carrito en el header muestra el badge con la cantidad agregada"},
+      {"step": "Abrir la pantalla 'My Cart'", "test_data": "N/A", "expected_result": "El ítem agregado muestra 'Color:' con el swatch azul, coincidiendo con el color seleccionado en el detalle"}
+    ]
+  },
+  {
+    "title": "Carrito - El texto de cantidad usa gramática singular con exactamente 1 ítem [SIM-8]",
+    "description": "Caso de regresión del bug SIM-13: valida que el resumen del carrito muestre '1 Item' en singular cuando la cantidad total es 1.",
+    "precondition": "El carrito está vacío.",
+    "priority": "Low",
+    "type": "Component",
+    "estimatedEffort": 60,
+    "labels": ["created_by_ai", "SIM-8", "carrito", "regresion", "SIM-13", "cosmetico"],
+    "customFields": { "Testing Layers": "Android", "Test Type Cycle": "Regresion" },
+    "steps": [
+      {"step": "Agregar exactamente 1 unidad de cualquier producto al carrito", "test_data": "Sauce Labs Backpack, cantidad: 1", "expected_result": "El badge del carrito en el header muestra '1'"},
+      {"step": "Abrir la pantalla 'My Cart' y observar el texto junto a 'Total:'", "test_data": "N/A", "expected_result": "El texto muestra '1 Item' en singular (no '1 Items')"}
+    ]
+  }
+]

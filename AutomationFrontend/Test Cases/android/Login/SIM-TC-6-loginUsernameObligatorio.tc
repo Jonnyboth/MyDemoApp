@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Login - Validacion de campo Username obligatorio vacio [SIM-6]. Valida que, con Username y Password vacios, presionar "Login" muestra "Username is required" bajo Username y no intenta autenticar.</description>
+   <name>SIM-TC-6-loginUsernameObligatorio</name>
+   <tag>regresion,login,android,borde</tag>
+   <comment></comment>
+   <recordOption>OTHER</recordOption>
+   <testCaseGuid>7efd1e18-7590-42f4-943e-5befa88690c0</testCaseGuid>
+</TestCaseEntity>

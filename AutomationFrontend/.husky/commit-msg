@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -e
+
+# git puede invocar este hook con una ruta relativa al cwd del hook (raíz del repo);
+# la resolvemos a absoluta ANTES de entrar a AutomationFrontend/ para no perderla.
+commit_msg_file="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
+
+cd AutomationFrontend
+npx --no -- commitlint --edit "$commit_msg_file"

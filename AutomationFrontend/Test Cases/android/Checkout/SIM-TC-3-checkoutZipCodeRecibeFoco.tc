@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Checkout - El campo Zip Code debe recibir foco y ser editable mediante toque directo [SIM-5]. Regresion del bug SIM-10: valida que Zip Code reciba el valor escrito y que City conserve el suyo sin alteraciones.</description>
+   <name>SIM-TC-3-checkoutZipCodeRecibeFoco</name>
+   <tag>regresion,checkout,android</tag>
+   <comment></comment>
+   <recordOption>OTHER</recordOption>
+   <testCaseGuid>74c66462-dca3-44c1-bfd6-de83079a8925</testCaseGuid>
+</TestCaseEntity>

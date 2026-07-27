@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Checkout - Envio exitoso del formulario de direccion con todos los campos obligatorios completos [SIM-5]. Valida que, con Full Name/Address Line 1/City/Zip Code/Country completos con datos reales, "To Payment" avanza a "Enter a payment method" sin errores.</description>
+   <name>SIM-TC-1-checkoutEnvioExitoso</name>
+   <tag>smoke,checkout,android</tag>
+   <comment></comment>
+   <recordOption>OTHER</recordOption>
+   <testCaseGuid>9538b844-0c39-40a1-aca8-b52e7d51f4d8</testCaseGuid>
+</TestCaseEntity>

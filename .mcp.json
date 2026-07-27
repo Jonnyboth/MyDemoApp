@@ -1,0 +1,72 @@
+{
+  "mcpServers": {
+    "smartbear-zephyr": {
+      "type": "stdio",
+      "command": "/usr/local/bin/npx",
+      "args": [
+        "-y",
+        "@smartbear/mcp@latest"
+      ],
+      "env": {
+        "ZEPHYR_API_TOKEN": "${ZEPHYR_API_TOKEN}"
+      }
+    },
+    "com.atlassian/atlassian-mcp-server": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    },
+    "playwright-mcp": {
+      "type": "stdio",
+      "command": "/usr/local/bin/npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--test-id-attribute",
+        "data-qa",
+        "--browser",
+        "chromium"
+      ]
+    },
+    "aisquare-playwright": {
+      "type": "stdio",
+      "command": "/usr/local/bin/npx",
+      "args": [
+        "aisquare-playwright-mcp@latest"
+      ]
+    },
+    "mobile-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mobilenext/mobile-mcp@latest"
+      ]
+    },
+    "aio-tests-mcp": {
+      "type": "http",
+      "url": "https://tcms-prod-us.aiojiraapps.com/aiotcms-mcp/v1/<TU_AIO_TESTS_WORKSPACE_ID>/mcp"
+    },
+    "appium-mcp-qa-pm": {
+      "type": "stdio",
+      "command": "/usr/local/bin/npx",
+      "args": [
+        "appium-mcp@latest"
+      ],
+      "env": {
+        "ANDROID_HOME": "${ANDROID_HOME}",
+        "CAPABILITIES_CONFIG": "FuncionalQaPm/.prompts/super_agent_Qa_PM.md",
+        "SCREENSHOTS_DIR": "./FuncionalQaPm/target/screenshots"
+      }
+    },
+    "appium-mcp-automation-backend": {
+      "type": "stdio",
+      "command": "/usr/local/bin/npx",
+      "args": [
+        "appium-mcp@latest"
+      ],
+      "env": {
+        "ANDROID_HOME": "${ANDROID_HOME}",
+        "CAPABILITIES_CONFIG": "AutomationBackend/.prompts/super_agent_automation_backend.md",
+        "SCREENSHOTS_DIR": "./AutomationBackend/target/screenshots"
+      }
+    }
+  }
+}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- =============================================================================
+     Katalon Headless Runner — Plantilla Profiles/default.glbl
+     Copiar a Profiles/default.glbl en el proyecto destino
+     Reemplazar los valores con << >> por los valores reales
+     ============================================================================= -->
+<GlobalVariableEntities>
+   <description></description>
+   <name>default</name>
+   <defaultProfile>true</defaultProfile>
+   <globalVariableEntities>
+
+      <!-- Platform: 'android' o 'ios' -->
+      <GlobalVariableEntity>
+         <description>Plataforma activa del test</description>
+         <initValue>'android'</initValue>
+         <name>G_Platform</name>
+      </GlobalVariableEntity>
+
+      <!-- Serial del dispositivo — obtener con: adb devices -->
+      <!-- NOTA: runner.yml sobreescribe este valor automáticamente -->
+      <GlobalVariableEntity>
+         <description>Serial del dispositivo Android (adb devices)</description>
+         <initValue>'<<SERIAL_DEL_DISPOSITIVO>>'</initValue>
+         <name>G_DevicesName</name>
+      </GlobalVariableEntity>
+
+      <!-- Package de la app — obtener con: adb shell dumpsys window windows | grep mCurrentFocus -->
+      <!-- NOTA: runner.yml sobreescribe este valor automáticamente -->
+      <GlobalVariableEntity>
+         <description>Package/Bundle ID de la app a testear</description>
+         <initValue>'<<com.tu.empresa.app>>'</initValue>
+         <name>G_AppBundleID</name>
+      </GlobalVariableEntity>
+
+      <!-- Variables adicionales de tu proyecto — agregar según necesidad -->
+      <!-- Ejemplo:
+      <GlobalVariableEntity>
+         <description>Ambiente de pruebas</description>
+         <initValue>'qa'</initValue>
+         <name>G_Environment</name>
+      </GlobalVariableEntity>
+      -->
+
+   </globalVariableEntities>
+</GlobalVariableEntities>

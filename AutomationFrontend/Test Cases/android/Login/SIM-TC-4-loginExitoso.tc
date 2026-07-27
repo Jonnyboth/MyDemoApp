@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Login - Inicio de sesion exitoso con credenciales validas [SIM-6]. Valida que bod@example.com/10203040 inicie sesion y navegue al catalogo, con el menu lateral mostrando &quot;Log Out&quot;.</description>
+   <name>SIM-TC-4-loginExitoso</name>
+   <tag>android,smoke,login</tag>
+   <comment></comment>
+   <recordOption>OTHER</recordOption>
+   <testCaseGuid>58ff310c-fdfb-47de-9cf7-9781536529f2</testCaseGuid>
+</TestCaseEntity>

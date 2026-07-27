@@ -1,0 +1,2 @@
+# Capturas de mitmproxy (archivos .flow) — ignoradas por git, contienen tráfico capturado potencialmente sensible
+*.flow

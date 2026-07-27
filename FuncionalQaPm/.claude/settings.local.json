@@ -1,0 +1,10 @@
+{
+  "enabledMcpjsonServers": [
+    "smartbear-zephyr",
+    "com.atlassian/atlassian-mcp-server",
+    "appium-mcp",
+    "playwright-mcp",
+    "aisquare-playwright",
+    "mobile-mcp"
+  ]
+}

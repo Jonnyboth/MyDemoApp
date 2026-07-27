@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+# 1) Blinda el árbol de directorios (colisiones case-insensitive + convención de nombres)
+bash AutomationFrontend/.husky/scripts/check-folder-structure.sh
+
+# 2) Bloquea dependencias de automatización web nuevas sin confirmar (ver CLAUDE.md)
+bash AutomationFrontend/.husky/scripts/check-web-scope-guard.sh
+
+# 3) Prettier + ESLint sobre los archivos staged del proyecto Node.js (WebKeywords/)
+cd AutomationFrontend
+npx lint-staged

@@ -1,0 +1,54 @@
+manifest_version: 1
+skill: qa-flow-planner
+role: planner
+pipeline_step: "1-Planificar"
+
+description: >
+  Explora el flujo funcional en dispositivo/navegador real y produce un plan de
+  automatización accionable (PlanStatus: Draft). No escribe código ni objetos .rs.
+
+modes:
+  - default   # única modalidad; no tiene sub-modos como qa-explorer
+
+inputs:
+  - descripcion_flujo: string
+  - plataforma: enum [android, ios, web]
+  - run_id: string   # formato QA-<YYYYMMDD>-<flujo-slug>, generado por qa-orchestrator
+
+outputs:
+  - context_file: .github/orchestrator/runs/<run-id>-<flujo>.md
+  - plan_status: Draft
+
+allowed_write_paths:
+  - ".github/orchestrator/runs/**"   # solo archivos nuevos, nunca sobrescribir
+
+forbidden_paths:
+  - "settings/**"
+  - "Include/config/**"
+  - "Profiles/**"
+  - "Drivers/**"
+  - "Libs/internal/**"
+  - "*.prj"
+  - "build.gradle"
+  - "package.json"
+
+state_machine:
+  field: PlanStatus
+  values: [Draft, Approved, Rejected]
+  owner_of_transition_to_draft: qa-flow-planner
+  owner_of_transition_to_approved_or_rejected: qa-explorer   # nunca el usuario, nunca este skill
+
+retry_policy:
+  counter_field: RetryCount
+  max_attempts: 3
+  on_exceeded: escalate_to_user
+  incremented_by: qa-explorer   # tras cada Rejected; qa-flow-planner solo lee el valor
+
+related_skills:
+  - qa-explorer        # siguiente paso obligatorio, valida y aprueba/rechaza
+
+reference_docs:
+  - references/reusable-testcases.md
+  - references/plan-template.md
+  - path: .claude/skills/katalon-mobile-automation/SKILL.md
+    note: "fuente de verdad superior — prevalece en caso de conflicto"

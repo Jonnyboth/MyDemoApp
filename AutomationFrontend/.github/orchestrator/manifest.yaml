@@ -1,0 +1,143 @@
+manifest_version: 1
+name: qa-orchestrator-pipeline
+description: >
+  Definición machine-readable del pipeline que sigue el Agente Orquestador único
+  (.claude/agents/qa-orchestrator.md), consumiendo Skills desde .claude/skills/ como
+  única fuente de verdad. El esquema legacy de sub-agentes .agent.md fue eliminado.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Pipeline fijo — no reordenable, no saltable (excepto el retorno 5→4 en fallo)
+# ─────────────────────────────────────────────────────────────────────────────
+pipeline:
+  - step: 0
+    name: "Fuente del TC"
+    tool: aio-tests-mcp
+    description: >
+      Obtiene el TC/HU a automatizar desde AIO Tests (Jira Cloud) vía MCP
+      (search_test_cases / get_test_case / get_test_case_schema). Reemplaza cualquier
+      referencia previa a Zephyr (smartbear-zephyr) — ese no es el sistema de gestión
+      de casos de prueba de este proyecto.
+    fallback: >
+      Si aio-tests-mcp no está autorizado en la sesión: usar exploración QA ya
+      documentada del proyecto, o los datos que provea el usuario directamente.
+    on_complete: goto_step_1
+
+  - step: 1
+    name: Planificar
+    skill: qa-flow-planner
+    produces: "context_file (PlanStatus: Draft)"
+    on_complete: goto_step_2
+
+  - step: 2
+    name: Explorar
+    skill: qa-explorer
+    substeps:
+      - name: validar
+        trigger: "context_file.PlanStatus == Draft"
+        outcomes:
+          Approved: continue_to_captura
+          Rejected: return_to_step_1_with_rejection_notes
+      - name: capturar
+        trigger: "context_file.PlanStatus == Approved"
+        produces: "Object Repository/**/*.rs"
+    retry:
+      counter_field: RetryCount
+      max_attempts: 3
+      scope: "ciclo Planificar↔Explorar (validación de plan)"
+      on_exceeded: escalate_to_user
+    on_complete: goto_step_3
+
+  - step: 3
+    name: "Crear Tests"
+    skill: qa-test-creator
+    precondition: "context_file.PlanStatus == Approved AND ApprovedBy == qa-explorer"
+    produces:
+      - "Page classes (Keywords/com/tuempresa/page/**)"
+      - "Steps classes (Keywords/com/tuempresa/steps/**)"
+      - "Script orquestador (Scripts/**)"
+      - "Test Case (.tc)"
+    on_complete: goto_step_4
+
+  - step: 4
+    name: "Correr Tests"
+    tool: runner_headless
+    command: "bash runner/run.sh run --case <plataforma>/<TC_NAME>"
+    success_criteria: "log contiene '✓ [PASSED ] <TC_NAME>'"
+    note: >
+      Usa el runner multiplataforma (Web + Android) de la Fase 2 del refactor —
+      plataforma derivada automáticamente de Test Cases/<plataforma>/... .
+    on_complete: goto_step_5
+
+  - step: 5
+    name: Validar
+    decision:
+      PASSED: terminar_test  # éxito — reportar y cerrar el run
+      FAILED:
+        skill: qa-debugger
+        action: diagnosticar_y_aplicar_fix_minimo
+        then: goto_step_4    # repetir "Correr Tests" con el fix aplicado
+    retry:
+      counter_field: RunnerRetryCount
+      max_attempts: 3
+      scope: "ciclo Correr↔Validar (debug/run)"
+      on_exceeded: escalate_to_user
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Decisiones de diseño explícitas (ver auditoría Fase 4 para el razonamiento)
+# ─────────────────────────────────────────────────────────────────────────────
+design_decisions:
+  - id: DD-1
+    decision: >
+      Se eliminó el gate manual "R-K5: Katalon Studio Problems panel = 0 errors" del
+      loop autónomo (existía como FASE 5B en el orquestador legacy, ya eliminado).
+    reason: >
+      Requería a un humano reportando el conteo del Problems panel del IDE gráfico de
+      Katalon Studio — incompatible con un pipeline "4-Correr Tests → 5-Validar"
+      totalmente autónomo, y Katalon Studio Desktop no está instalado en el entorno
+      headless de este runner (ver auditoría de dependencias). Se conserva como
+      recomendación manual en qa-test-creator/references/groovy-compat-rules.md.
+  - id: DD-2
+    decision: >
+      Las fases "2A validar" y "2B capturar" del pipeline original se fusionaron en un
+      solo paso "2-Explorar" con dos sub-modos dentro del mismo skill (qa-explorer).
+    reason: >
+      Coincide literalmente con la especificación del usuario ("2-Explorar (capturar
+      objetos, crear keywords, etc.)"), y evita que el Orquestador tenga que modelar un
+      sub-estado adicional — qa-explorer ya decide internamente en qué modo entrar según
+      PlanStatus.
+  - id: DD-3
+    decision: >
+      El estado del pipeline se persiste en .github/orchestrator/runs/, una ruta nueva,
+      en vez de reusar .github/agents/context/orchestrator/ (legacy, ya eliminado).
+    reason: >
+      El nuevo Orquestador necesita su propio espacio de estado para no mezclar runs
+      del sistema viejo con el nuevo. .github/agents/** fue eliminado por completo tras
+      la auditoría del 2026-07-25 — .claude/ (agents/ + skills/) es ahora la única
+      fuente de verdad del proyecto.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Comunicación entre skills — mismo mecanismo que el sistema original (archivos)
+# ─────────────────────────────────────────────────────────────────────────────
+communication:
+  run_id_format: "QA-<YYYYMMDD>-<flujo-slug>"
+  context_file: ".github/orchestrator/runs/<run-id>-<flujo>.md"
+  state_fields:
+    - PlanStatus: [Draft, Approved, Rejected]
+    - RetryCount: int
+    - RunnerRetryCount: int
+    - Phase: [PLANIFICAR, EXPLORAR_VALIDAR, EXPLORAR_CAPTURAR, CREAR_TESTS, CORRER_TESTS, DEBUG, COMPLETED, FAILED]
+
+skills_consumed:
+  - qa-flow-planner
+  - qa-explorer
+  - qa-test-creator
+  - qa-debugger
+
+tools_consumed:
+  - aio-tests-mcp   # paso 0 — fuente de TCs (Jira Cloud AIO Tests)
+
+guardrails_globales:
+  - "El Orquestador no escribe código — solo su propio archivo de estado en runs/"
+  - "No saltarse pasos — el orden 1→2→3→4→5 es obligatorio"
+  - "Pipeline idempotente — reiniciar con el mismo run-id continúa desde la fase pendiente"
+  - "Rutas prohibidas para el Orquestador mismo: settings/**, Profiles/**, Drivers/**, *.prj"

@@ -1,0 +1,97 @@
+manifest_version: 1
+skill: qa-test-creator
+role: builder
+pipeline_step: "3-Crear Tests"
+
+description: >
+  Construye Object Repository + Page + Steps + Script + .tc a partir de un plan Approved,
+  y ejecuta el runner headless como validación E2E obligatoria.
+
+approval_gate:
+  requires: "context_file.PlanStatus == Approved AND context_file.ApprovedBy == qa-explorer"
+  on_draft: |
+    ⛔ Plan no aprobado aún.
+    Estado actual: Draft
+    Acción: invocar qa-explorer para que valide y apruebe el plan.
+  on_rejected: |
+    ⛔ Plan rechazado por qa-explorer.
+    RejectionNotes: <leer del archivo de contexto>
+    Acción: invocar qa-flow-planner con las RejectionNotes para ajustar el plan.
+
+inputs:
+  - context_file: ".github/orchestrator/runs/<run-id>-<flujo>.md (PlanStatus: Approved)"
+
+outputs:
+  - object_repository_files: list[path]
+  - page_files: list[path]
+  - steps_files: list[path]
+  - script_file: path
+  - test_case_file: path
+  - runner_result: PASSED | FAILED
+
+allowed_write_paths:
+  - "Object Repository/android/**"
+  - "Object Repository/ios/**"
+  - "Object Repository/web/**"
+  - "Keywords/com/tuempresa/page/**"
+  - "Keywords/com/tuempresa/steps/**"
+  - "Keywords/com/MyDemoApp/page/**"   # feature Login (SIM-6) — app bajo prueba actual, ver CLAUDE.md
+  - "Keywords/com/MyDemoApp/steps/**"
+  - "Keywords/MyDemoApp/utils/**"
+  - "Scripts/android/**"
+  - "Scripts/ios/**"
+  - "Scripts/web/**"
+  - "Test Cases/android/**"
+  - "Test Cases/ios/**"
+  - "Test Cases/web/**"
+  - "Test Suites/**"   # solo si el usuario lo pide explícitamente
+
+forbidden_paths:
+  - "settings/**"
+  - "Include/config/**"
+  - "Profiles/**"
+  - "Drivers/**"
+  - "Libs/internal/**"
+  - "*.prj"
+  - "build.gradle"
+  - "package.json"
+  - "console.properties"
+  - "entityReference.index"
+
+architecture_rules:
+  page: ["Mobile.*", "WebUI.*", "findTestObject()", "DeviceResolutionPage.scaleX/scaleY/scalePoint()"]
+  steps: ["@Keyword", "llamadas a Page"]
+  steps_forbidden: ["Mobile.*", "WebUI.*", "findTestObject()"]
+  script: ["CustomKeywords", "Mobile.startExistingApplication()", "WebUI.openBrowser()", "Mobile.comment()/WebUI.comment()", "close lifecycle"]
+  script_forbidden: ["Mobile.tap()", "WebUI.click()", "findTestObject() directo"]
+
+path_mirroring_rule: >
+  Test Cases/<plataforma>/<subfolder>/<TC>.tc  →  Scripts/<plataforma>/<subfolder>/<TC>/Script<timestamp>.groovy
+  Nunca usar el run-id del pipeline como nombre de carpeta del script.
+
+hard_rules_refs:
+  - .claude/skills/qa-explorer/references/rs-hard-rules.md   # R-K1/R-K2/R-K3
+  - references/groovy-compat-rules.md                         # R-K4/R-K5/R-K6/R-K6.1
+
+mandatory_validation:
+  step: "4-Correr Tests"
+  command: "bash runner/run.sh run --case <plataforma>/<TC_NAME>"
+  success_criteria: "log contiene '✓ [PASSED ] <TC_NAME>'"
+  on_failure: "no reportar completado — handoff a qa-debugger"
+  katalon_studio_gui_gate:
+    status: DEPRECATED_FROM_AUTONOMOUS_LOOP
+    reason: >
+      El gate original (R-K5, Problems panel de Katalon Studio = 0 errors) requería un
+      humano frente al IDE gráfico. El pipeline autónomo del nuevo qa-orchestrator solo
+      usa el runner headless (paso 4/5). Se conserva como recomendación manual en
+      references/groovy-compat-rules.md, no como bloqueo del loop.
+
+related_skills:
+  - qa-explorer     # origen del plan Approved y de los .rs
+  - qa-debugger      # destino si el runner falla
+
+reference_docs:
+  - references/groovy-compat-rules.md
+  - references/post-creation-standards.md
+  - path: .claude/skills/katalon-mobile-automation/SKILL.md
+    note: "plantillas Page/Steps/Script/.tc — fuente de verdad superior"
