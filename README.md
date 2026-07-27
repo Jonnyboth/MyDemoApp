@@ -97,6 +97,13 @@ flowchart LR
     K --> H
 ```
 
+Dos casos reales de este flujo, recorridos paso a paso hasta el archivo y la línea exacta que
+los implementa (árbol de directorios incluido): [Happy Path — SIM-TC-12 Create User](https://jonnyboth.github.io/MyDemoApp/backend-happy-path.html)
+(`AutomationBackend`) y [Arquitectura de 3 capas — AutomationFrontend](https://jonnyboth.github.io/MyDemoApp/frontend-3-layers.html)
+(`AutomationFrontend`). Índice completo en [`docs/`](docs/index.html) — requiere GitHub Pages
+habilitado sobre `main` / `docs` (Settings → Pages) para verse online; mientras tanto, los
+mismos archivos se pueden abrir localmente desde `docs/*.html`.
+
 ## Estructura del repositorio
 
 Cada módulo tiene su propio orquestador con nombre identificable (ya no comparten el genérico

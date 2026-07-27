@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MyDemoApp — Documentación técnica</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>" />
+<style>
+  :root{
+    --bg:#f6f5f2;
+    --surface:#ffffff;
+    --ink:#1c1b19;
+    --ink-soft:#5a564e;
+    --ink-faint:#8b8579;
+    --line:#e2ddd2;
+    --accent:#0f6e63;
+    --accent-soft:#dcede9;
+    --shadow:0 1px 2px rgba(28,27,25,0.05), 0 10px 28px rgba(28,27,25,0.06);
+    --font-head: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    --font-body: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#15140f;
+      --surface:#1e1c17;
+      --ink:#efece4;
+      --ink-soft:#b5ae9f;
+      --ink-faint:#7d7768;
+      --line:#332f26;
+      --accent:#3fbfae;
+      --accent-soft:#1b2f2b;
+      --shadow:0 1px 2px rgba(0,0,0,0.4), 0 10px 28px rgba(0,0,0,0.35);
+    }
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    padding:0 0 5rem;
+  }
+  .wrap{max-width:56rem; margin:0 auto; padding:0 1.5rem;}
+
+  header{
+    padding:4rem 0 2.5rem;
+    border-bottom:1px solid var(--line);
+    margin-bottom:2.5rem;
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 0.9rem;
+  }
+  h1{
+    font-family:var(--font-head);
+    font-weight:600;
+    font-size:clamp(1.9rem, 3.4vw, 2.5rem);
+    line-height:1.15;
+    margin:0 0 0.9rem;
+    text-wrap:balance;
+  }
+  .lede{
+    font-size:1.02rem;
+    line-height:1.6;
+    color:var(--ink-soft);
+    max-width:62ch;
+    margin:0;
+  }
+  .lede code{
+    font-family:var(--font-mono);
+    font-size:0.9em;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:0.05em 0.4em;
+  }
+
+  .cards{
+    display:grid;
+    gap:1.1rem;
+  }
+  a.card{
+    display:block;
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    padding:1.5rem 1.7rem;
+    text-decoration:none;
+    color:inherit;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  a.card:hover{
+    border-color:var(--accent);
+    transform:translateY(-1px);
+  }
+  a.card:focus-visible{
+    outline:2px solid var(--accent);
+    outline-offset:3px;
+  }
+  .card .tag{
+    display:inline-block;
+    font-family:var(--font-mono);
+    font-size:0.72rem;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--accent);
+    background:var(--accent-soft);
+    border-radius:999px;
+    padding:0.15rem 0.6rem;
+    margin-bottom:0.7rem;
+  }
+  .card h2{
+    font-family:var(--font-head);
+    font-size:1.3rem;
+    font-weight:600;
+    margin:0 0 0.4rem;
+    text-wrap:balance;
+  }
+  .card p{
+    margin:0;
+    font-size:0.94rem;
+    line-height:1.55;
+    color:var(--ink-soft);
+  }
+  .card .go{
+    display:block;
+    margin-top:0.9rem;
+    font-family:var(--font-mono);
+    font-size:0.78rem;
+    color:var(--ink-faint);
+  }
+
+  footer{
+    max-width:56rem;
+    margin:3.5rem auto 0;
+    padding:1.5rem 1.5rem 0;
+    border-top:1px solid var(--line);
+    color:var(--ink-faint);
+    font-size:0.85rem;
+    line-height:1.6;
+  }
+  footer a{ color:var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">MyDemoApp · docs</p>
+    <h1>Documentación técnica del proyecto</h1>
+    <p class="lede">
+      Diagramas generados a partir del código real del repo — no maquetas ni diagramas
+      genéricos. Cada página recorre un caso de prueba concreto, capa por capa, hasta el
+      archivo y la línea exacta que lo implementa.
+    </p>
+  </header>
+
+  <div class="cards">
+    <a class="card" href="./backend-happy-path.html">
+      <span class="tag">AutomationBackend · pytest</span>
+      <h2>Happy Path — SIM-TC-12 Create User</h2>
+      <p>
+        11 pasos del test de creación de usuario contra DummyJSON: Arrange → Act (única
+        llamada real de red) → Assert, más el árbol de directorios del framework de API.
+      </p>
+      <span class="go">Ver diagrama →</span>
+    </a>
+
+    <a class="card" href="./frontend-3-layers.html">
+      <span class="tag">AutomationFrontend · Katalon / Appium</span>
+      <h2>Arquitectura de 3 capas — AutomationFrontend</h2>
+      <p>
+        El flujo completo de un test Android real (SIM-TC-4 · Login), desde
+        <code>runner/run.sh</code> hasta el reporte JUnit, más el árbol de directorios
+        de las suites Katalon y Playwright.
+      </p>
+      <span class="go">Ver diagrama →</span>
+    </a>
+  </div>
+</div>
+
+<footer>
+  Parte del repositorio <a href="https://github.com/Jonnyboth/MyDemoApp">Jonnyboth/MyDemoApp</a>.
+  Ver también el <a href="https://github.com/Jonnyboth/MyDemoApp#readme">README</a> del proyecto.
+</footer>
+
+</body>
+</html>

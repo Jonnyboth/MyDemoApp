@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Arquitectura de 3 capas — AutomationFrontend</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌳</text></svg>" />
+<style>
+  :root {
+    --bg: #eef1f5;
+    --surface: #ffffff;
+    --surface-2: #e4e9ef;
+    --ink: #131a24;
+    --ink-soft: #4b5563;
+    --ink-faint: #7a8695;
+    --accent: #a8570f;
+    --accent-soft: #f2e2d0;
+    --line: #c7d0da;
+    --ok: #1f7a4d;
+    --ok-bg: #e3f3ea;
+    --forbid: #b3261e;
+    --forbid-bg: #fbe6e4;
+    --code-bg: #0f1420;
+    --code-ink: #d9e1ea;
+    --code-dim: #7c8a9c;
+    --shadow: 0 1px 2px rgba(19, 26, 36, 0.06), 0 8px 24px rgba(19, 26, 36, 0.05);
+    --font-head: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    --font-body: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Menlo", Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0c1118;
+      --surface: #131a24;
+      --surface-2: #1a2330;
+      --ink: #e6ebf1;
+      --ink-soft: #a6b1bf;
+      --ink-faint: #6b7684;
+      --accent: #e0973f;
+      --accent-soft: #3a2c17;
+      --line: #263243;
+      --ok: #4ade80;
+      --ok-bg: #123322;
+      --forbid: #ff7a6e;
+      --forbid-bg: #3a1815;
+      --code-bg: #080b10;
+      --code-ink: #d9e1ea;
+      --code-dim: #5c6b7d;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+  }
+  body { padding: 0 0 6rem; }
+
+  .wrap { max-width: 76rem; margin: 0 auto; padding: 0 1.5rem; }
+
+  .back-link{
+    display:block;
+    max-width: 76rem;
+    margin: 1.25rem auto 0;
+    padding: 0 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    text-decoration: none;
+  }
+  .back-link:hover{ color: var(--accent); }
+
+  header.hero {
+    border-bottom: 1px solid var(--line);
+    padding: 3.5rem 0 2.25rem;
+    margin-bottom: 3rem;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 0.9rem;
+  }
+  h1 {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: clamp(1.9rem, 3.2vw, 2.6rem);
+    line-height: 1.15;
+    margin: 0 0 0.9rem;
+    text-wrap: balance;
+    max-width: 34ch;
+  }
+  .lede {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 66ch;
+    margin: 0;
+  }
+  .lede code { font-size: 0.92em; }
+
+  section { margin: 3.5rem 0; }
+  h2 {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: 1.5rem;
+    margin: 0 0 0.4rem;
+    text-wrap: balance;
+  }
+  .section-note {
+    color: var(--ink-faint);
+    font-size: 0.94rem;
+    margin: 0 0 1.5rem;
+    max-width: 70ch;
+    line-height: 1.55;
+  }
+
+  code, pre, .mono { font-family: var(--font-mono); }
+  code {
+    background: var(--surface-2);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-size: 0.88em;
+  }
+
+  /* ---- scenario banner ---- */
+  .scenario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.2rem;
+    align-items: baseline;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 1.1rem 1.4rem;
+    margin-bottom: 2.25rem;
+  }
+  .scenario .tag {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+  }
+  .scenario strong { font-family: var(--font-head); font-size: 1.05rem; }
+  .scenario span.desc { color: var(--ink-soft); font-size: 0.9rem; flex-basis: 100%; }
+  .scenario dl.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.4rem;
+    margin: 0.2rem 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+  .scenario dl.meta dt { color: var(--ink-faint); }
+  .scenario dl.meta dt::after { content: " "; }
+  .scenario dl.meta div { display: flex; gap: 0.35rem; }
+  .scenario .status-ok { color: var(--ok); font-weight: 700; }
+
+  /* ---- run flow (paso a paso) ---- */
+  .run-flow { position: relative; padding-left: 2.1rem; }
+  .run-flow::before {
+    content: "";
+    position: absolute;
+    left: 0.65rem; top: 0.4rem; bottom: 1.6rem;
+    width: 2px;
+    background: var(--line);
+  }
+  .run-phase {
+    position: relative;
+    margin: 1.7rem 0 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .run-phase:first-child { margin-top: 0.1rem; }
+  .run-step {
+    position: relative;
+    margin-bottom: 0.65rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .run-step::before {
+    content: "";
+    position: absolute;
+    left: -1.75rem; top: 1.05rem;
+    width: 0.65rem; height: 0.65rem;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--ink-faint);
+  }
+  .run-step.hot { border-color: var(--accent); }
+  .run-step.hot::before { background: var(--accent); border-color: var(--accent); }
+  .run-step.result {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--ok);
+    background: var(--ok-bg);
+    border-color: var(--ok);
+  }
+  .run-step.result::before { background: var(--ok); border-color: var(--ok); }
+  .run-top { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-bottom: 0.35rem; }
+  .run-pill {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 0.1rem 0.45rem;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .run-pill.device { color: var(--accent); border-color: var(--accent); }
+  .run-step code.run-call {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    color: var(--ink);
+    background: none;
+    padding: 0;
+    margin: 0.15rem 0 0.3rem;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .run-step p.run-why {
+    margin: 0;
+    font-size: 0.8rem;
+    line-height: 1.5;
+    color: var(--ink-faint);
+  }
+
+  /* ---- directory trees ---- */
+  .trees { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 860px) { .trees { grid-template-columns: 1fr; } }
+  .tree-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .tree-card > .stack-label {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--surface-2);
+  }
+  .stack-label .dot { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--accent); flex: none; }
+  .stack-label strong { font-family: var(--font-head); font-size: 1rem; }
+  .stack-label span { color: var(--ink-faint); font-size: 0.82rem; }
+  .tree-card pre {
+    margin: 0;
+    padding: 1.1rem 1.1rem 1.3rem;
+    overflow-x: auto;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    color: var(--ink);
+  }
+  .tree-card pre .dim { color: var(--ink-faint); }
+  .tree-card pre .layer-page { color: var(--ok); font-weight: 600; }
+  .tree-card pre .layer-steps { color: var(--accent); font-weight: 600; }
+  .tree-card pre .layer-test { color: var(--forbid); font-weight: 600; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 1rem; font-size: 0.85rem; color: var(--ink-soft); }
+  .legend span { display: inline-flex; align-items: center; gap: 0.45rem; }
+  .legend i { width: 0.7rem; height: 0.7rem; border-radius: 2px; display: inline-block; }
+  .legend .lp { background: var(--ok); }
+  .legend .ls { background: var(--accent); }
+  .legend .lt { background: var(--forbid); }
+
+  footer {
+    max-width: 76rem;
+    margin: 4rem auto 0;
+    padding: 1.5rem 1.5rem 0;
+    border-top: 1px solid var(--line);
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<a class="back-link" href="./index.html">← MyDemoApp / docs</a>
+
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">AutomationFrontend · POM de 3 capas</p>
+    <h1>Una arquitectura, dos motores de prueba</h1>
+    <p class="lede">
+      <code>AutomationFrontend/</code> corre dos suites en paralelo — Katalon/Groovy para
+      móvil y Playwright/Node.js para web — y ambas respetan el mismo contrato de 3 capas:
+      <strong>Test/Script → Steps → Page → Locators</strong>. El foco activo del proyecto es
+      Android/Katalon, así que seguimos ese lado paso a paso, del comando en la terminal
+      hasta el reporte final.
+    </p>
+  </header>
+
+  <section id="flow">
+    <h2>El flujo de un test real, paso a paso</h2>
+    <p class="section-note">
+      13 pasos, en el orden exacto en que corre <code>bash runner/run.sh run --case
+      android/SIM-TC-4-loginExitoso</code>. El punto naranja marca los pasos que tocan de
+      verdad el emulador/dispositivo vía Appium; el resto es orquestación Groovy pura.
+    </p>
+
+    <div class="scenario">
+      <span class="tag">Caso real</span>
+      <strong>SIM-TC-4 · Login exitoso</strong>
+      <span class="desc">bod@example.com inicia sesión y el menú lateral muestra "Log Out".</span>
+      <dl class="meta">
+        <div><dt>TC:</dt> <dd>SIM-TC-4</dd></div>
+        <div><dt>App:</dt> <dd>com.saucelabs.mydemoapp.android</dd></div>
+        <div><dt>Runner:</dt> <dd>runner/run.sh</dd></div>
+        <div><dt>Resultado:</dt> <dd class="status-ok">PASSED</dd></div>
+      </dl>
+    </div>
+
+    <div class="run-flow">
+
+      <p class="run-phase">Setup — descubre el TC y arranca la sesión</p>
+
+      <div class="run-step">
+        <div class="run-top"><span class="run-pill">Runner</span></div>
+        <code class="run-call">bash runner/run.sh run --case android/SIM-TC-4-loginExitoso</code>
+        <p class="run-why">Punto de entrada único: build + ejecución en un solo comando.</p>
+      </div>
+
+      <div class="run-step">
+        <div class="run-top"><span class="run-pill">TestCaseLoader.groovy</span></div>
+        <code class="run-call">lee SIM-TC-4.tc  →  resuelve cadena de setUp (ej. openApp)</code>
+        <p class="run-why">Katalon nunca corre un TC aislado: primero arma el orden real de ejecución según sus dependencias.</p>
+      </div>
+
+      <div class="run-step hot">
+        <div class="run-top"><span class="run-pill device">AppiumDriverManager.groovy → emulador</span></div>
+        <code class="run-call">crea sesión Appium con runner/config/runner.yml (udid, appPackage, UiAutomator2)</code>
+        <p class="run-why">Primer contacto real con el device — a partir de acá cada tap ocurre de verdad.</p>
+      </div>
+
+      <div class="run-step hot">
+        <div class="run-top"><span class="run-pill device">Script</span></div>
+        <code class="run-call">Mobile.startExistingApplication(GlobalVariable.G_AppBundleID)</code>
+        <p class="run-why">Lanza la SauceLabs My Demo App ya instalada en el AVD/dispositivo.</p>
+      </div>
+
+      <p class="run-phase">Act — pasos de negocio (Script → Steps → Page)</p>
+
+      <div class="run-step">
+        <div class="run-top"><span class="run-pill">Script1784995948314.groovy</span></div>
+        <code class="run-call">CustomKeywords.'...LoginSteps.openLoginScreen'()</code>
+        <p class="run-why">El Script solo nombra intención de negocio — nunca ve un locator.</p>
+      </div>
+
+      <div class="run-step">
+        <div class="run-top"><span class="run-pill">LoginSteps.groovy</span></div>
+        <code class="run-call">openLoginScreen()  →  loginPage.tapMenuIcon(); loginPage.tapLoginLink()</code>
+        <p class="run-why">Steps orquesta la secuencia de Page, sin tocar Mobile.* directamente.</p>
+      </div>
+
+      <div class="run-step hot">
+        <div class="run-top"><span class="run-pill device">LoginPage.groovy → emulador</span></div>
+        <code class="run-call">Mobile.tap(findTestObject('Object Repository/android/Login/btn_login'))</code>
+        <p class="run-why">Único lugar del flujo que llama <code>findTestObject</code> — la capa Page es la única con acceso al Object Repository.</p>
+      </div>
+
+      <div class="run-step">
+        <div class="run-top"><span class="run-pill">btn_login.rs</span></div>
+        <code class="run-call">locatorStrategy=ACCESSIBILITY · "Tap to login with given credentials"</code>
+        <p class="run-why">El Object Repository resuelve el locator real antes de que Appium lo use.</p>
+      </div>
+
+      <p class="run-phase">Assert</p>
+
+      <div class="run-step">
+        <div class="run-top"><span class="run-pill">LoginSteps.groovy</span></div>
+        <code class="run-call">assertLoginSuccessful()  →  loginPage.verifyMenuShowsLogOut()</code>
+        <p class="run-why">Steps nombra la intención ("login exitoso"); Page ejecuta la verificación.</p>
+      </div>
+
+      <div class="run-step hot">
+        <div class="run-top"><span class="run-pill device">LoginPage.groovy → emulador</span></div>
+        <code class="run-call">Mobile.verifyElementText(findTestObject(LBL_MENU_LOGOUT), "Log Out", STOP_ON_FAILURE)</code>
+        <p class="run-why">Lee el estado real de pantalla — no infiere el resultado, lo comprueba contra el device.</p>
+      </div>
+
+      <p class="run-phase">Reporte</p>
+
+      <div class="run-step">
+        <div class="run-top"><span class="run-pill">KatalonRunner.groovy</span></div>
+        <code class="run-call">captura resultado · screenshotOnFailure: true (solo si falla)</code>
+        <p class="run-why">El screenshot solo se toma en fallo, para no llenar <code>runner/reports/</code> de evidencia innecesaria.</p>
+      </div>
+
+      <div class="run-step">
+        <div class="run-top"><span class="run-pill">KatalonRunner.groovy</span></div>
+        <code class="run-call">escribe runner/reports/test-results.xml (JUnit)</code>
+        <p class="run-why">Formato estándar — lo puede leer cualquier CI sin parser propio.</p>
+      </div>
+
+      <div class="run-step result">✓ [PASSED] SIM-TC-4-loginExitoso</div>
+
+    </div>
+  </section>
+
+  <section id="trees">
+    <h2>El árbol de directorios</h2>
+    <p class="section-note">
+      Ambas pilas cuelgan del mismo <code>AutomationFrontend/</code> y usan la misma forma:
+      un directorio por capa. Los colores marcan qué archivo pertenece a cuál capa — son los
+      mismos archivos que acabas de recorrer arriba, del lado Katalon.
+    </p>
+    <div class="trees">
+      <div class="tree-card">
+        <div class="stack-label">
+          <span class="dot"></span>
+          <strong>Katalon · Groovy (móvil)</strong>
+          <span>preexistente</span>
+        </div>
+        <pre><span class="dim">AutomationFrontend/</span>
+├── Object Repository/
+│   └── android/
+│       ├── Login/
+│       │   ├── input_username.rs
+│       │   ├── btn_login.rs
+│       │   └── lbl_loginError.rs
+│       └── Menu/
+│           └── btn_menuIcon.rs        <span class="dim">← locators</span>
+│
+├── Keywords/com/MyDemoApp/
+│   ├── <span class="layer-page">page/android/</span>
+│   │   └── <span class="layer-page">LoginPage.groovy</span>       <span class="dim">Page</span>
+│   │       <span class="dim">findTestObject(...) · Mobile.tap(...)</span>
+│   │
+│   └── <span class="layer-steps">steps/android/</span>
+│       └── <span class="layer-steps">LoginSteps.groovy</span>      <span class="dim">Steps</span>
+│           <span class="dim">@Keyword · orquesta LoginPage</span>
+│
+├── Scripts/android/Login/SIM-TC-4/
+│   └── <span class="layer-test">Script1784995948314.groovy</span>  <span class="dim">Script</span>
+│       <span class="dim">CustomKeywords.'...steps...'()</span>
+│
+└── Test Cases/
+    └── SIM-TC-4.tc</pre>
+      </div>
+
+      <div class="tree-card">
+        <div class="stack-label">
+          <span class="dot"></span>
+          <strong>Node.js · Playwright (web)</strong>
+          <span>nuevo</span>
+        </div>
+        <pre><span class="dim">AutomationFrontend/</span>
+├── eslint.config.js              <span class="dim">← fronteras entre capas</span>
+├── .prettierrc · .prettierignore
+├── commitlint.config.js
+├── .lintstagedrc.json
+├── .husky/
+│   ├── pre-commit · commit-msg
+│   └── scripts/check-folder-structure.sh
+│
+└── WebKeywords/
+    ├── <span class="layer-page">pages/</span>
+    │   └── <span class="layer-page">LoginPage.js</span>            <span class="dim">Page</span>
+    │       <span class="dim">page.locator(...) · acciones atómicas</span>
+    │
+    ├── <span class="layer-steps">steps/</span>
+    │   └── <span class="layer-steps">LoginSteps.js</span>          <span class="dim">Steps</span>
+    │       <span class="dim">orquesta LoginPage, sin locators</span>
+    │
+    └── <span class="layer-test">tests/</span>
+        └── <span class="layer-test">login.spec.js</span>           <span class="dim">Test</span>
+            <span class="dim">require('../steps/LoginSteps')</span></pre>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="lp"></i> Page — única capa con locators</span>
+      <span><i class="ls"></i> Steps — orquesta Page, expone negocio</span>
+      <span><i class="lt"></i> Test / Script — orquestación delgada</span>
+    </div>
+  </section>
+</div>
+
+<footer>
+  Generado a partir del código real del repo: <code>Keywords/com/MyDemoApp/page/android/LoginPage.groovy</code>,
+  <code>Keywords/com/MyDemoApp/steps/android/LoginSteps.groovy</code>,
+  <code>Scripts/android/Login/SIM-TC-4/Script1784995948314.groovy</code>,
+  <code>Object Repository/android/Login/btn_login.rs</code>,
+  <code>runner/config/runner.yml</code> y <code>runner/KatalonRunner.groovy</code> dentro de
+  <code>AutomationFrontend/</code>.
+</footer>
+
+</body>
+</html>
