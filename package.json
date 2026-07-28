@@ -1,0 +1,29 @@
+{
+  "name": "mydemoapp",
+  "version": "1.0.0",
+  "description": "Sistema de **Súper Agentes Orquestadores** (Scrum Master AI) que gestiona el trabajo diario de un QA funcional + Automatizador dentro de un proyecto ágil: refinamiento de Historias de Usuario en formato BDD, diseño y automatización de Casos de Prueba, y reporte de bugs — delegando cada fase a skills de IA especializadas, integradas de forma nativa con herramientas reales de gestión de proyectos (Jira, AIO Tests) y de automatización de pruebas (Appium/Katalon para la app móvil, `pytest` para su capa de servicios).",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.62.0",
+    "playwright": "^1.62.0",
+    "playwright-core": "^1.62.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jonnyboth/MyDemoApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Jonnyboth/MyDemoApp/issues"
+  },
+  "homepage": "https://github.com/Jonnyboth/MyDemoApp#readme"
+}
