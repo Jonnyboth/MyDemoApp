@@ -51,3 +51,7 @@ runner:
   screenshotOnFailure: true
   retryOnFailure: 0                   # retries per test (0 = no retry)
   defaultTimeout: 15                  # seconds for element waits
+  # Grabación de video: se controla desde Profiles/default.glbl > G_RecordVideo,
+  # no desde aquí — es la única fuente que también lee Katalon Studio real
+  # (via Test Listeners/VideoRecorderListener.groovy). El flag --record de la
+  # terminal sigue funcionando como override puntual de este runner headless.

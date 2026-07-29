@@ -4,8 +4,13 @@
 # Usage:
 #   ./run.sh run --case android/TC_CompraProductosTurboDev
 #   ./run.sh run --tag smoke
+#   ./run.sh run --suite Android/Smoke/Android-Smoke
+#   ./run.sh run --suite Android/Regresion/Android-Regresion --record
 #   ./run.sh run --all
 #   ./run.sh list
+#
+# --record agrega un video continuo (adb screenrecord) + runner/reports/report.html
+# con el detalle de la corrida. Ver runner/SETUP.md.
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -euo pipefail

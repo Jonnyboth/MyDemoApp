@@ -10,6 +10,7 @@ import org.yaml.snakeyaml.Yaml
  * Uso:
  *   ./run.sh run --case android/TC_CompraProductosTurboDev
  *   ./run.sh run --tag smoke
+ *   ./run.sh run --suite Android/Smoke/Android-Smoke
  *   ./run.sh run --all
  *   ./run.sh list
  *   ./run.sh list --tag smoke
@@ -18,8 +19,19 @@ import org.yaml.snakeyaml.Yaml
  *   --project <dir>    Directorio raíz del proyecto (default: System property runner.projectDir)
  *   --config  <file>   Archivo YAML de configuración (default: runner/config/runner.yml)
  *   --report  <dir>    Directorio de reportes (default: <project>/runner/reports)
+ *   --suite   <path>   Ejecuta un Test Suite nativo de Katalon (.ts bajo 'Test Suites/')
+ *   --record           Fuerza la grabación de video para este run puntual (ver abajo)
  *   --no-driver        No iniciar ningún driver, ni Appium ni navegador (dry-run)
  *   --no-appium        Alias retrocompatible de --no-driver
+ *
+ * Reportes: siempre se generan runner/reports/test-results.xml (JUnit) y
+ * runner/reports/report.html (HTML, con el video embebido si se grabó).
+ *
+ * Video: se activa si Profiles/default.glbl > G_RecordVideo: true (misma fuente que lee
+ * Katalon Studio real via Test Listeners/VideoRecorderListener.groovy), o puntualmente
+ * con --record (el flag de terminal es un override — funciona aunque G_RecordVideo esté
+ * en false). Requiere adb + ffmpeg, solo Android. Cada corrida deja su propia carpeta,
+ * nunca pisa la anterior: runner/reports/videos/<nombre-suite-o-test>_<fecha>_<hora>/video.mp4
  *
  * Multiplataforma: la plataforma de cada test case se deriva del primer segmento
  * de su ruta bajo 'Test Cases/' (android/ → Appium+UiAutomator2, web/ → Selenium,
@@ -56,7 +68,7 @@ class KatalonRunner {
 
         // ── Cargar test cases ──────────────────────────────────────────────
         TestCaseLoader loader = new TestCaseLoader(projectRoot)
-        List<TestCase>  cases = selectTestCases(command, opts, loader)
+        List<TestCase>  cases = selectTestCases(command, opts, loader, projectRoot)
 
         if (command == 'list') {
             printList(cases)
@@ -74,6 +86,20 @@ class KatalonRunner {
         // ── Dry-run: sin ningún driver (ni Appium ni navegador) ─────────────
         // --no-appium se conserva por compatibilidad con invocaciones existentes.
         boolean noDriver = opts.containsKey('--no-driver') || opts.containsKey('--no-appium')
+
+        // ── Grabación de video (Profiles/default.glbl > G_RecordVideo, o --record puntual) ──
+        // Arranca ANTES del primer test y se detiene en el finally de abajo,
+        // así cubre literalmente "desde el primer segundo hasta el último"
+        // incluso si algún test lanza una excepción no controlada.
+        // G_RecordVideo es la MISMA variable que lee Katalon Studio real (via
+        // Test Listeners/VideoRecorderListener.groovy) — una sola fuente de verdad.
+        boolean recordFromGlobalVar = GlobalVariable.getAll()['G_RecordVideo'] == true
+        boolean record = opts.containsKey('--record') || recordFromGlobalVar
+        String  udid   = ((config.device ?: [:]) as Map)?.udid?.toString()
+        String  runLabel = determineRunLabel(opts)
+        VideoRecorder videoRecorder = record ? new VideoRecorder(udid, runLabel) : null
+        File videoFile = null
+        videoRecorder?.start()
 
         // ── Ejecutar tests ─────────────────────────────────────────────────
         ScriptExecutor   executor = new ScriptExecutor(projectRoot)
@@ -94,11 +120,15 @@ class KatalonRunner {
             // con su propio driver perezosamente iniciado — ambos se cierran aquí.
             if (AppiumDriverManager.isActive()) AppiumDriverManager.quit()
             if (WebDriverManager.isActive())    WebDriverManager.quit()
+
+            // La grabación se detiene siempre, incluso si el batch falló a mitad de camino.
+            videoFile = videoRecorder?.stop(reportDir)
         }
 
         // ── Generar reportes ──────────────────────────────────────────────
         reportDir.mkdirs()
         ReportGenerator.writeJUnitXml(results, new File(reportDir, 'test-results.xml'))
+        ReportGenerator.writeHtmlReport(results, new File(reportDir, 'report.html'), videoFile)
         ReportGenerator.printSummary(results)
     }
 
@@ -181,9 +211,12 @@ class KatalonRunner {
     }
 
     private static List<TestCase> selectTestCases(String command, Map<String, String> opts,
-                                                   TestCaseLoader loader) {
+                                                   TestCaseLoader loader, File projectRoot) {
         if (opts['--case']) {
             return [loader.load(opts['--case'])]
+        }
+        if (opts['--suite']) {
+            return new TestSuiteLoader(projectRoot).load(opts['--suite'])
         }
         if (opts['--tag']) {
             return loader.loadByTag(opts['--tag'])
@@ -195,6 +228,24 @@ class KatalonRunner {
             System.exit(1)
         }
         return loader.loadAll()
+    }
+
+    /**
+     * Nombre descriptivo de la corrida, usado para nombrar la carpeta del video.
+     * Prioriza el criterio de selección más específico: --suite/--case ya identifican
+     * exactamente qué se corrió; --tag y --all son más genéricos.
+     */
+    private static String determineRunLabel(Map<String, String> opts) {
+        if (opts['--suite']) return lastPathSegment(opts['--suite'])
+        if (opts['--case'])  return lastPathSegment(opts['--case'])
+        if (opts['--tag'])   return "tag-${opts['--tag']}"
+        return 'all'
+    }
+
+    private static String lastPathSegment(String path) {
+        String clean = path.replaceAll(/\.(ts|tc)$/, '')
+        String[] parts = clean.split('/')
+        return parts[-1]
     }
 
     private static Map<String, String> parseArgs(String[] args) {

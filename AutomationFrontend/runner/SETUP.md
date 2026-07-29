@@ -148,7 +148,13 @@ APPIUM_BASE_PATH=/         # el runner concatena tal cual el url del YAML
 
 ```bash
 # Un solo TC (resuelve dependencias setUp automáticamente)
-bash runner/run.sh TestData0SearchStoreHome
+bash runner/run.sh run --case android/Login/SIM-TC-4-loginExitoso
+
+# Por tag
+bash runner/run.sh run --tag smoke
+
+# Por Test Suite nativo de Katalon (Test Suites/<ruta>.ts)
+bash runner/run.sh run --suite Android/Smoke/Android-Smoke
 
 # Listar todos los TCs disponibles
 bash runner/run.sh list
@@ -158,6 +164,27 @@ cat runner/reports/test-results.xml
 ```
 
 Criterio de éxito: la salida termina con `✓ [PASSED ] <TC>`.
+
+### 3.4 Reporte HTML y video de la corrida
+
+Cada `run` genera automáticamente `runner/reports/report.html` (resumen +
+detalle por test, autocontenido — se puede abrir directo en el navegador).
+
+Para grabar además un video continuo de toda la corrida (desde antes del
+primer test hasta después del último), agregar `--record`:
+
+```bash
+bash runner/run.sh run --suite Android/Regresion/Android-Regresion --record
+```
+
+Requiere `adb` (dispositivo/emulador Android conectado) y `ffmpeg` en PATH.
+El video queda en `runner/reports/videos/run_<timestamp>.mp4` y se embebe
+automáticamente en `report.html`. Detalles de implementación: encadena
+segmentos de `adb shell screenrecord` (limitado a ~3 min cada uno) y los une
+con `ffmpeg -f concat` al finalizar — ver `VideoRecorder.groovy`. Alcance
+actual: solo Android (única plataforma con dispositivo real en este runner).
+Si `ffmpeg` no está disponible, el reporte igual se genera y conserva el
+primer segmento grabado sin unir en vez de fallar la corrida.
 
 ---
 

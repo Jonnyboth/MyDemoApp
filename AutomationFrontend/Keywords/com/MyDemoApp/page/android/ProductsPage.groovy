@@ -19,6 +19,10 @@ public class ProductsPage {
     private static final String BTN_ADD_TO_CART      = 'Object Repository/android/ProductDetail/btn_addToCart'
     private static final String BTN_VIEW_CART        = 'Object Repository/android/Products/btn_viewCart'
     private static final String LBL_CART_ITEM_COUNT  = 'Object Repository/android/Products/lbl_cartItemCount'
+    private static final String PRODUCT_TITLE_1      = 'Object Repository/android/Products/lbl_productTitle1'
+    private static final String PRODUCT_TITLE_2      = 'Object Repository/android/Products/lbl_productTitle2'
+    private static final String PRODUCT_TITLE_3      = 'Object Repository/android/Products/lbl_productTitle3'
+    private static final String PRODUCT_TITLE_4      = 'Object Repository/android/Products/lbl_productTitle4'
 
     private static final int MAX_BACK_ATTEMPTS = 5
 
@@ -81,5 +85,61 @@ public class ProductsPage {
     boolean hasItemsInCart() {
         return SmartWaitPage.waitVisible(
             findTestObject(LBL_CART_ITEM_COUNT), SmartWaitPage.SHORT, FailureHandling.OPTIONAL)
+    }
+
+    /**
+     * Verifica el criterio de aceptacion de SIM-TC-16: el catalogo esta
+     * ordenado alfabeticamente de forma ascendente (Name - Ascending) por
+     * defecto. Compara cada titulo visible contra el siguiente
+     * (case-insensitive) usando getVisibleProductTitlesInOrder(). Falla con
+     * AssertionError si algun par esta desordenado, o si se leyeron menos de
+     * 2 titulos (no hay nada que comparar -- no deberia pasar en un
+     * dispositivo con al menos 1 fila completa visible). Asume que el
+     * catalogo "Products" ya esta visible.
+     */
+    @Keyword
+    void verifyDefaultSortIsNameAscending() {
+        List<String> titles = getVisibleProductTitlesInOrder()
+        if (titles.size() < 2) {
+            throw new AssertionError('Se esperaban al menos 2 titulos de producto visibles '
+                + 'para comparar el orden por defecto, se leyeron ' + titles.size()
+                + ': ' + titles)
+        }
+        for (int i = 0; i < titles.size() - 1; i++) {
+            String current = titles[i]
+            String next = titles[i + 1]
+            if (current.compareToIgnoreCase(next) > 0) {
+                throw new AssertionError('Orden alfabetico ascendente roto: "' + current
+                    + '" deberia ir antes que "' + next + '". Titulos leidos en orden: '
+                    + titles)
+            }
+        }
+    }
+
+    // -- Privado -------------------------------------------------------
+
+    /**
+     * Lee el texto de los titulos de producto visibles sin scroll en el
+     * catalogo (primeras 2 filas del grid, hasta 4 tarjetas), en el orden en
+     * que aparecen en pantalla. Tolerante a dispositivos con menos filas
+     * visibles: cada lectura usa FailureHandling.OPTIONAL, asi que si
+     * instance(2) o instance(3) no estan presentes (pantalla mas chica),
+     * simplemente se omiten de la lista en vez de fallar el test. Asume que
+     * el catalogo "Products" ya esta visible.
+     *
+     * @return lista de titulos en el orden de aparicion (2 a 4 elementos)
+     */
+    private List<String> getVisibleProductTitlesInOrder() {
+        List<String> titles = []
+        List<String> titleObjectIds = [PRODUCT_TITLE_1, PRODUCT_TITLE_2, PRODUCT_TITLE_3, PRODUCT_TITLE_4]
+        for (String objectId : titleObjectIds) {
+            def titleObj = findTestObject(objectId)
+            boolean visible = SmartWaitPage.waitVisible(
+                titleObj, SmartWaitPage.SHORT, FailureHandling.OPTIONAL)
+            if (visible) {
+                titles.add(Mobile.getText(titleObj, SmartWaitPage.SHORT))
+            }
+        }
+        return titles
     }
 }

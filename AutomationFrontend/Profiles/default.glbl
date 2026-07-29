@@ -8,25 +8,64 @@
       <description>Plataforma de ejecución: 'android' o 'ios'</description>
       <initValue>'android'</initValue>
       <name>G_Platform</name>
+      <protected>false</protected>
+      <valueType>STRING</valueType>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description>Package ID / Bundle ID de la app bajo prueba (configurable — cualquier app)</description>
       <initValue>'com.saucelabs.mydemoapp.android'</initValue>
       <name>G_AppBundleID</name>
+      <protected>false</protected>
+      <valueType>STRING</valueType>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description>Automation name para Appium: 'UiAutomator2' (Android) o 'XCUITest' (iOS)</description>
       <initValue>'UiAutomator2'</initValue>
       <name>G_AutomationName</name>
+      <protected>false</protected>
+      <valueType>STRING</valueType>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description>Usuario de prueba (email o identificador)</description>
       <initValue>''</initValue>
       <name>G_User</name>
+      <protected>false</protected>
+      <valueType>STRING</valueType>
    </GlobalVariableEntity>
    <GlobalVariableEntity>
       <description>Nombre del dispositivo (como aparece en adb/instruments)</description>
       <initValue>'emulator-5554'</initValue>
       <name>G_DevicesName</name>
+      <protected>false</protected>
+      <valueType>STRING</valueType>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>true = graba video continuo (adb screenrecord + ffmpeg) de la corrida — Android&#xd;
+      únicamente. Fuente única de verdad para AMBOS motores: Katalon Studio real (via&#xd;
+      Test Listeners/VideoRecorderListener.groovy) y el runner headless por terminal&#xd;
+      (KatalonRunner.groovy). El flag --record de la terminal sigue funcionando como&#xd;
+      override puntual del runner headless aunque esto esté en false.</description>
+      <initValue>true</initValue>
+      <name>G_RecordVideo</name>
+      <protected>false</protected>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Ruta absoluta a adb (ej. C:\Users\tú\.katalon\tools\android_sdk\platform-tools\adb.exe
+      en Windows). Vacío = usa &quot;adb&quot; tal cual del PATH del proceso que corre Katalon Studio o el
+      runner headless — en Katalon Studio nativo de Windows ese PATH normalmente NO incluye el
+      SDK de Android aunque sí esté instalado.</description>
+      <initValue>'C:/Users/USER/.katalon/tools/android_sdk/platform-tools/adb.exe'</initValue>
+      <name>G_AdbPath</name>
+      <protected>false</protected>
+      <valueType>STRING</valueType>
+   </GlobalVariableEntity>
+   <GlobalVariableEntity>
+      <description>Ruta absoluta a ffmpeg (ej. C:\ffmpeg\bin\ffmpeg.exe en Windows). Vacío = usa
+      &quot;ffmpeg&quot; tal cual del PATH. Solo se usa para unir segmentos cuando la grabación dura más de
+      ~170s (un solo segmento no necesita ffmpeg).</description>
+      <initValue>''</initValue>
+      <name>G_FfmpegPath</name>
+      <protected>false</protected>
+      <valueType>STRING</valueType>
    </GlobalVariableEntity>
 </GlobalVariableEntities>

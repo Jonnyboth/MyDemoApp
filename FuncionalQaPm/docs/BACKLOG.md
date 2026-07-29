@@ -17,6 +17,20 @@ Cada HU incluye: narrativa Como/Quiero/Para, Contexto/Notas, Sugerencias de UX/U
 (redactadas por `skill_project_manager`, sin prototipos formales — ver nota de bloqueo abajo) y
 Criterios de Aceptación en formato Gherkin/BDD.
 
+## Backlog real — Proyecto SIM (SimonMovilidad)
+
+| Issue | Título | Tipo | Estado |
+|---|---|---|---|
+| [SIM-18](https://jhonnyboth.atlassian.net/browse/SIM-18) | Ordenar el catálogo de productos por nombre y precio | Historia | Tareas por hacer (Backlog) |
+
+Historia creada por `skill_project_manager` a partir de hallazgos de una sesión de prueba
+exploratoria del componente de ordenamiento del catálogo (Android, `sortIV`), documentada en
+[`docs/QaExplorer/Android/MyDemoApp/Catalogo/Catalogo/Catalogo.md`](QaExplorer/Android/MyDemoApp/Catalogo/Catalogo/Catalogo.md).
+La exploración confirmó (3 corridas limpias) que el ordenamiento en sí funciona correctamente
+en los 4 criterios, y detectó un defecto crítico relacionado pero fuera del alcance de esta
+Historia — crash reproducible al tocar un producto tras cambiar el orden — pendiente de
+reportarse como Bug independiente si el usuario lo confirma.
+
 ### ⚠️ Nota de orquestación
 La Fase de Diseño formal (prototipos estructurales en Markdown/HTML/CSS, breakpoints
 responsivos) corresponde a `skill_ui_ux_designer`, referenciada en `super_agent_Qa_PM.md` pero cuya

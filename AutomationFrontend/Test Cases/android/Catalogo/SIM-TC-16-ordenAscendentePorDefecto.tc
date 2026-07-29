@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TestCaseEntity>
+   <description>Catalogo - Verificar orden alfabetico ascendente por defecto al abrir el catalogo [SIM-17]. Valida que el catalogo de productos se muestre ordenado alfabeticamente de forma ascendente (Name - Ascending) como criterio de orden por defecto, sin que el cliente aplique ninguna accion de ordenamiento.</description>
+   <name>SIM-TC-16-ordenAscendentePorDefecto</name>
+   <tag>android,smoke,catalogo</tag>
+   <comment></comment>
+   <recordOption>OTHER</recordOption>
+   <testCaseGuid>5f445862-f58b-496a-ae9f-9bbeefd525ca</testCaseGuid>
+</TestCaseEntity>

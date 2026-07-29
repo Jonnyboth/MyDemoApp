@@ -32,4 +32,10 @@ public class ProductsSteps {
     void openCart() {
         productsPage.openCart()
     }
+
+    /** Assert de SIM-TC-16: confirma que el orden por defecto del catalogo es alfabetico ascendente. */
+    @Keyword
+    void assertDefaultSortIsNameAscending() {
+        productsPage.verifyDefaultSortIsNameAscending()
+    }
 }

@@ -112,7 +112,7 @@ public class LoginPage {
      */
     @Keyword
     void verifyLoggedInMenuState() {
-        Mobile.tap(findTestObject(MENU_ICON), SmartWaitPage.MEDIUM)
+        utils.tapSafely(findTestObject(MENU_ICON), SmartWaitPage.MEDIUM)
         SmartWaitPage.waitVisible(findTestObject(LOGOUT_ITEM), SmartWaitPage.MEDIUM)
     }
 
@@ -159,11 +159,11 @@ public class LoginPage {
      * "Log Out" haya quedado visible tras el primer tap.
      */
     private void openDrawer() {
-        Mobile.tap(findTestObject(MENU_ICON), SmartWaitPage.MEDIUM)
+        utils.tapSafely(findTestObject(MENU_ICON), SmartWaitPage.MEDIUM)
         boolean ready = utils.isElementVisible(findTestObject(LOGIN_ITEM), SmartWaitPage.SHORT) ||
                         utils.isElementVisible(findTestObject(LOGOUT_ITEM), SmartWaitPage.SHORT)
         if (!ready) {
-            Mobile.tap(findTestObject(MENU_ICON), SmartWaitPage.MEDIUM)
+            utils.tapSafely(findTestObject(MENU_ICON), SmartWaitPage.MEDIUM)
         }
     }
 

@@ -9,8 +9,6 @@ import com.kms.katalon.core.mobile.keyword.MobileBuiltInKeywords as Mobile
 Mobile.comment('SIM-TC-4: Login exitoso con credenciales validas (bod@example.com)')
 Mobile.comment('PRECONDICION: reiniciar la app (cerrar + abrir) para partir de un estado base limpio')
 CustomKeywords.'com.MyDemoApp.steps.android.AppLifecycleSteps.restartApp'()
-Mobile.comment('PRECONDICION: reiniciar la app (cerrar + abrir) para partir de un estado base limpio')
-CustomKeywords.'com.MyDemoApp.steps.android.AppLifecycleSteps.restartApp'()
 
 // ─── PASOS DEL TEST ───────────────────────────────────────────
 Mobile.comment('STEP 1: Abrir menu lateral y navegar a Login (estado limpio garantizado)')
