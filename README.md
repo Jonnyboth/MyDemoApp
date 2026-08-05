@@ -21,7 +21,7 @@ errores/alucinaciones detectados y corregidos durante el desarrollo) está docum
 total transparencia en [`AI_USAGE.md`](AI_USAGE.md).
 
 ## Introduccion Acotada
-[MAterial en formato multimedia](https://drive.google.com/drive/folders/1YqQcg-jrwsWVsjE30g34GaHhbBVu91HR?usp=sharing)
+[Material en formato multimedia MyDemoApp](https://drive.google.com/drive/folders/1YqQcg-jrwsWVsjE30g34GaHhbBVu91HR?usp=sharing)
 
 ## Índice
 
